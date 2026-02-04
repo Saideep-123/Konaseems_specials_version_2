@@ -8,11 +8,12 @@ export type ProductLike = {
   category: string;
   image: string;
   price?: number;
-  weight?: string;
+  weight: string;    // ✅ REQUIRED
 
   desc?: string;
   highlights?: string[];
 };
+
 
 type Props = {
   product: ProductLike;
