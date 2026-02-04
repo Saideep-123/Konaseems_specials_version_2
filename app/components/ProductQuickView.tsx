@@ -7,8 +7,16 @@ export type ProductLike = {
   name: string;
   category: string;
   image: string;
-  price: number;          // ✅ required (USD from sheet)
-  weight: string;         // ✅ e.g. "250g" or "1L"
+
+  // ✅ current selected unit price (USD)
+  price: number;
+
+  // ✅ current selected weight label (e.g., "250g")
+  weight: "250g" | "500g" | "1kg" | string;
+
+  // ✅ OPTIONAL: prices by weight (from Google Sheet)
+  prices?: Partial<Record<"250g" | "500g" | "1kg", number>>;
+
   desc?: string;
   highlights?: string[];
   out_of_stock?: boolean;
@@ -22,6 +30,8 @@ type Props = {
   onClose: () => void;
   onAdd: (payload: ProductLike, qty: number) => void;
 };
+
+const WEIGHTS: Array<"250g" | "500g" | "1kg"> = ["250g", "500g", "1kg"];
 
 function fallbackHighlights(p: ProductLike): string[] {
   const cat = (p.category || "").toLowerCase();
@@ -71,16 +81,28 @@ export default function ProductQuickView({
 }: Props) {
   const [qty, setQty] = useState(1);
 
+  // ✅ selected weight for this quick view
+  const [selectedWeight, setSelectedWeight] = useState<"250g" | "500g" | "1kg">(
+    (WEIGHTS.includes(product.weight as any) ? product.weight : "250g") as
+      | "250g"
+      | "500g"
+      | "1kg"
+  );
+
   const highlights = useMemo(() => {
     const h = product.highlights?.filter(Boolean) ?? [];
     return h.length >= 4 ? h.slice(0, 4) : fallbackHighlights(product);
   }, [product]);
 
-  // ✅ USD total = price * qty
-  const totalPrice = useMemo(() => {
-    const base = Number(product.price ?? 0);
-    return base * qty;
-  }, [product.price, qty]);
+  // ✅ unit price based on selected weight
+  const unitPrice = useMemo(() => {
+    const fromMap = product.prices?.[selectedWeight];
+    const p = Number(fromMap ?? product.price ?? 0);
+    return Number.isFinite(p) ? p : 0;
+  }, [product.price, product.prices, selectedWeight]);
+
+  // ✅ total = unitPrice * qty
+  const totalPrice = useMemo(() => unitPrice * qty, [unitPrice, qty]);
 
   useEffect(() => {
     const prevOverflow = document.body.style.overflow;
@@ -97,12 +119,18 @@ export default function ProductQuickView({
     };
   }, [onClose]);
 
+  const disabled = !!product.out_of_stock || product.is_live === false;
+
   const handleAdd = () => {
-    onAdd(product, qty); // ✅ qty respected
+    // ✅ send selected weight + unit price into cart payload
+    const payload: ProductLike = {
+      ...product,
+      weight: selectedWeight,
+      price: unitPrice,
+    };
+    onAdd(payload, qty);
     onClose();
   };
-
-  const disabled = !!product.out_of_stock || product.is_live === false;
 
   return (
     <div className="fixed inset-0 z-[9999]">
@@ -162,21 +190,46 @@ export default function ProductQuickView({
               </div>
 
               <div className="p-5 md:p-7">
-                <div className="text-sm text-[#6b5a4a]">
-                  Pack:{" "}
-                  <span className="font-semibold text-[#2c1f14]">
-                    {product.weight}
-                  </span>
+                {/* ✅ Weight selector */}
+                <div className="text-sm font-semibold text-[#2c1f14] mb-2">
+                  Select weight
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {WEIGHTS.map((w) => {
+                    const available =
+                      (product.prices?.[w] ?? 0) > 0 || product.prices == null; // if no map, allow buttons
+                    const active = selectedWeight === w;
+
+                    return (
+                      <button
+                        key={w}
+                        type="button"
+                        disabled={!available}
+                        onClick={() => setSelectedWeight(w)}
+                        className={[
+                          "px-4 py-2 rounded-full text-sm border transition",
+                          active
+                            ? "bg-[#2f4a3a] text-white border-[#2f4a3a]"
+                            : "bg-white text-[#2c1f14] border-[#e8dccb] hover:border-[#c9a36a]",
+                          !available ? "opacity-40 cursor-not-allowed" : "",
+                        ].join(" ")}
+                      >
+                        {w}
+                      </button>
+                    );
+                  })}
                 </div>
 
                 {/* ✅ USD unit price */}
-                <div className="mt-3 text-2xl font-bold text-[#2c1f14]">
-                  {usd(Number(product.price ?? 0))}
+                <div className="mt-4 text-2xl font-bold text-[#2c1f14]">
+                  {usd(unitPrice)}
                   <span className="ml-2 text-sm font-semibold text-[#6b5a4a]">
-                    / pack
+                    / {selectedWeight}
                   </span>
                 </div>
 
+                {/* Qty */}
                 <div className="mt-6">
                   <div className="text-sm font-semibold text-[#2c1f14] mb-2">
                     Quantity
@@ -207,6 +260,7 @@ export default function ProductQuickView({
                   </div>
                 </div>
 
+                {/* Details list */}
                 <div className="mt-6">
                   <div className="text-sm font-semibold text-[#2c1f14] mb-2">
                     Product details
@@ -219,6 +273,7 @@ export default function ProductQuickView({
                   </ul>
                 </div>
 
+                {/* Suggestions */}
                 {suggestions.length > 0 && (
                   <div className="mt-10">
                     <div className="flex items-center justify-between mb-3">
@@ -267,7 +322,7 @@ export default function ProductQuickView({
             </div>
           </div>
 
-          {/* ✅ Sticky Bar shows USD total */}
+          {/* Sticky Bar */}
           <div className="border-t border-[#efe4d6] bg-[#fffaf2] px-5 py-4 md:px-6">
             <div className="flex items-center justify-between gap-4">
               <div className="min-w-0">
@@ -275,7 +330,7 @@ export default function ProductQuickView({
                 <div className="text-lg font-bold text-[#2c1f14] truncate">
                   {usd(totalPrice)}
                   <span className="ml-2 text-sm font-semibold text-[#6b5a4a]">
-                    ({product.weight} × {qty})
+                    ({selectedWeight} × {qty})
                   </span>
                 </div>
               </div>
