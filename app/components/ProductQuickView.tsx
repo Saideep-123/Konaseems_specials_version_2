@@ -7,34 +7,21 @@ export type ProductLike = {
   name: string;
   category: string;
   image: string;
-  price?: number;
-  weight: string;    // ✅ REQUIRED
-
+  price: number;          // ✅ required (USD from sheet)
+  weight: string;         // ✅ e.g. "250g" or "1L"
   desc?: string;
   highlights?: string[];
+  out_of_stock?: boolean;
+  is_live?: boolean;
 };
-
 
 type Props = {
   product: ProductLike;
-
-  /** ✅ NEW: suggestions shown near bottom */
   suggestions?: ProductLike[];
-
-  /** ✅ NEW: open suggestion in quick view */
   onOpenSuggestion?: (p: ProductLike) => void;
-
   onClose: () => void;
-
-  /** Keep compatibility with your existing cart.add() */
   onAdd: (payload: ProductLike, qty: number) => void;
 };
-
-const WEIGHTS = [
-  { label: "250g", grams: 250, multiplier: 1 },
-  { label: "500g", grams: 500, multiplier: 2 },
-  { label: "1kg", grams: 1000, multiplier: 4 },
-];
 
 function fallbackHighlights(p: ProductLike): string[] {
   const cat = (p.category || "").toLowerCase();
@@ -70,6 +57,11 @@ function fallbackHighlights(p: ProductLike): string[] {
   ];
 }
 
+const usd = (n: number) =>
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
+    Number.isFinite(n) ? n : 0
+  );
+
 export default function ProductQuickView({
   product,
   suggestions = [],
@@ -78,19 +70,18 @@ export default function ProductQuickView({
   onAdd,
 }: Props) {
   const [qty, setQty] = useState(1);
-  const [weight, setWeight] = useState(WEIGHTS[0]);
 
   const highlights = useMemo(() => {
     const h = product.highlights?.filter(Boolean) ?? [];
     return h.length >= 4 ? h.slice(0, 4) : fallbackHighlights(product);
   }, [product]);
 
-  const computedPrice = useMemo(() => {
+  // ✅ USD total = price * qty
+  const totalPrice = useMemo(() => {
     const base = Number(product.price ?? 0);
-    return base * weight.multiplier * qty;
-  }, [product.price, weight.multiplier, qty]);
+    return base * qty;
+  }, [product.price, qty]);
 
-  // Lock background scroll (but sheet content scrolls).
   useEffect(() => {
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -107,24 +98,17 @@ export default function ProductQuickView({
   }, [onClose]);
 
   const handleAdd = () => {
-    // We keep your existing cart behavior: add the product (increments qty in cart).
-    // (Your cart currently merges by product.id; we’re not changing cart logic here.)
-    onAdd(product, qty);
+    onAdd(product, qty); // ✅ qty respected
     onClose();
   };
 
+  const disabled = !!product.out_of_stock || product.is_live === false;
+
   return (
     <div className="fixed inset-0 z-[9999]">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/45"
-        onClick={onClose}
-        aria-hidden="true"
-      />
+      <div className="absolute inset-0 bg-black/45" onClick={onClose} />
 
-      {/* Mobile bottom-sheet / Desktop centered modal */}
       <div className="absolute inset-0 flex items-end md:items-center md:justify-center">
-        {/* Panel MUST be flex-col with max height so inner scroll works on mobile */}
         <div
           role="dialog"
           aria-modal="true"
@@ -132,17 +116,14 @@ export default function ProductQuickView({
             "w-full md:max-w-4xl bg-[#fffaf2] border border-[#e8dccb] shadow-2xl",
             "rounded-t-3xl md:rounded-2xl",
             "max-h-[92dvh] md:max-h-[calc(100dvh-3rem)]",
-            "overflow-hidden",
-            "flex flex-col",
+            "overflow-hidden flex flex-col",
           ].join(" ")}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Small grab handle (premium feel) */}
           <div className="md:hidden pt-2 pb-1 flex justify-center">
             <div className="h-1.5 w-12 rounded-full bg-black/15" />
           </div>
 
-          {/* Header (always visible) */}
           <div className="relative px-5 pt-3 pb-4 md:px-6 md:pt-6 border-b border-[#efe4d6]">
             <div className="text-[12px] text-[#c9a36a] font-semibold tracking-wide">
               {product.category}
@@ -167,10 +148,8 @@ export default function ProductQuickView({
             </button>
           </div>
 
-          {/* ✅ THIS is the scrollable area. If this isn’t scrollable, mobile will get stuck. */}
           <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]">
             <div className="grid grid-cols-1 md:grid-cols-2">
-              {/* Image */}
               <div className="relative bg-[#faf7f2]">
                 <div className="relative w-full h-[240px] md:h-full min-h-[240px] overflow-hidden">
                   <img
@@ -182,47 +161,22 @@ export default function ProductQuickView({
                 </div>
               </div>
 
-              {/* Details */}
               <div className="p-5 md:p-7">
                 <div className="text-sm text-[#6b5a4a]">
-                  Selected:{" "}
+                  Pack:{" "}
                   <span className="font-semibold text-[#2c1f14]">
-                    {weight.label}
+                    {product.weight}
                   </span>
                 </div>
 
+                {/* ✅ USD unit price */}
                 <div className="mt-3 text-2xl font-bold text-[#2c1f14]">
-                  ₹{Number.isFinite(computedPrice) ? computedPrice : 0}
+                  {usd(Number(product.price ?? 0))}
+                  <span className="ml-2 text-sm font-semibold text-[#6b5a4a]">
+                    / pack
+                  </span>
                 </div>
 
-                {/* Weight */}
-                <div className="mt-6">
-                  <div className="text-sm font-semibold text-[#2c1f14] mb-2">
-                    Select weight
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {WEIGHTS.map((w) => {
-                      const active = w.label === weight.label;
-                      return (
-                        <button
-                          key={w.label}
-                          type="button"
-                          onClick={() => setWeight(w)}
-                          className={[
-                            "px-4 py-2 rounded-full text-sm border transition",
-                            active
-                              ? "bg-[#2f4a3a] text-white border-[#2f4a3a]"
-                              : "bg-white text-[#2c1f14] border-[#e8dccb] hover:border-[#c9a36a]",
-                          ].join(" ")}
-                        >
-                          {w.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Qty */}
                 <div className="mt-6">
                   <div className="text-sm font-semibold text-[#2c1f14] mb-2">
                     Quantity
@@ -253,7 +207,6 @@ export default function ProductQuickView({
                   </div>
                 </div>
 
-                {/* Details list */}
                 <div className="mt-6">
                   <div className="text-sm font-semibold text-[#2c1f14] mb-2">
                     Product details
@@ -266,16 +219,13 @@ export default function ProductQuickView({
                   </ul>
                 </div>
 
-                {/* ✅ Suggestions (appear down below; user must scroll to reach) */}
                 {suggestions.length > 0 && (
                   <div className="mt-10">
                     <div className="flex items-center justify-between mb-3">
                       <div className="text-sm font-semibold text-[#2c1f14]">
                         You may also like
                       </div>
-                      <div className="text-xs text-[#6b5a4a]">
-                        Tap to open
-                      </div>
+                      <div className="text-xs text-[#6b5a4a]">Tap to open</div>
                     </div>
 
                     <div className="flex gap-3 overflow-x-auto pb-2 [-webkit-overflow-scrolling:touch]">
@@ -283,9 +233,7 @@ export default function ProductQuickView({
                         <button
                           key={s.id}
                           type="button"
-                          onClick={() => {
-                            if (onOpenSuggestion) onOpenSuggestion(s);
-                          }}
+                          onClick={() => onOpenSuggestion?.(s)}
                           className="shrink-0 w-[170px] rounded-2xl border border-[#e8dccb] bg-white overflow-hidden text-left hover:shadow-md transition"
                         >
                           <div className="h-[92px] w-full overflow-hidden bg-[#faf7f2]">
@@ -305,7 +253,7 @@ export default function ProductQuickView({
                               {s.name}
                             </div>
                             <div className="mt-1 text-sm font-bold text-[#2c1f14]">
-                              ₹{Number(s.price ?? 0)}
+                              {usd(Number(s.price ?? 0))}
                             </div>
                           </div>
                         </button>
@@ -314,21 +262,20 @@ export default function ProductQuickView({
                   </div>
                 )}
 
-                {/* Keep space so last content never hides behind sticky bar */}
                 <div className="h-28" />
               </div>
             </div>
           </div>
 
-          {/* ✅ Sticky Add-to-Cart Bar (always visible) */}
+          {/* ✅ Sticky Bar shows USD total */}
           <div className="border-t border-[#efe4d6] bg-[#fffaf2] px-5 py-4 md:px-6">
             <div className="flex items-center justify-between gap-4">
               <div className="min-w-0">
                 <div className="text-[12px] text-[#6b5a4a]">Total</div>
                 <div className="text-lg font-bold text-[#2c1f14] truncate">
-                  ₹{Number.isFinite(computedPrice) ? computedPrice : 0}
+                  {usd(totalPrice)}
                   <span className="ml-2 text-sm font-semibold text-[#6b5a4a]">
-                    ({weight.label} × {qty})
+                    ({product.weight} × {qty})
                   </span>
                 </div>
               </div>
@@ -336,9 +283,15 @@ export default function ProductQuickView({
               <button
                 type="button"
                 onClick={handleAdd}
-                className="shrink-0 h-12 px-6 rounded-2xl bg-[#2f4a3a] text-white font-semibold hover:brightness-110 transition"
+                disabled={disabled}
+                className={[
+                  "shrink-0 h-12 px-6 rounded-2xl font-semibold transition",
+                  disabled
+                    ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                    : "bg-[#2f4a3a] text-white hover:brightness-110",
+                ].join(" ")}
               >
-                Add to Cart
+                {product.out_of_stock ? "Out of Stock" : "Add to Cart"}
               </button>
             </div>
           </div>
