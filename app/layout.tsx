@@ -15,21 +15,23 @@ export const metadata = {
   description: "Traditional Konaseema sweets made with pure ingredients",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const text =
+    "🚚 Free Shipping · 🌿 100% Handmade · ⭐ 4.8 Rated · 🎁 Combo Deals";
+
   return (
     <html
       lang="en"
       className={`${inter.variable} ${playfair.variable} ${greatVibes.variable}`}
     >
       <body className="bg-cream text-brown">
-        {/* Premium scrolling bar */}
-        <div className="w-full bg-black text-white text-sm overflow-hidden whitespace-nowrap">
-          <div className="animate-marquee inline-block px-4">
-            🚚 Free Shipping · 🌿 100% Handmade · ⭐ 4.8 Rated · 🎁 Combo Deals
+        {/* Premium scrolling bar (continuous) */}
+        <div className="w-full bg-black text-white text-sm overflow-hidden">
+          <div className="marquee">
+            <div className="marquee__inner">
+              <div className="marquee__item">{text}</div>
+              <div className="marquee__item">{text}</div>
+            </div>
           </div>
         </div>
 
