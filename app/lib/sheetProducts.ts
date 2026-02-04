@@ -1,4 +1,4 @@
-export const SHEET_URL = "REPLACE_WITH_PUBLIC_SHEET_JSON_URL";
+export const SHEET_URL = "https://opensheet.elk.sh/1VfHHO5eN8xHn8MNtmFWdgAXv7SuIt1Bs71SITE7lc_I/Sheet1";
 
 export type SheetProduct = {
   product_id: string;
