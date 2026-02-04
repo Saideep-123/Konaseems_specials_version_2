@@ -31,7 +31,7 @@ export default function Products({ activeCategory, searchQuery }: any) {
             <div
               key={p.id}
               className="border rounded-xl p-3 cursor-pointer hover:shadow-md transition"
-              onClick={() => setSelected(p)}   {/* ✅ THIS WAS MISSING */}
+              onClick={() => setSelected(p)}
             >
               <img
                 src={p.image}
@@ -40,6 +40,7 @@ export default function Products({ activeCategory, searchQuery }: any) {
               />
 
               <h3 className="mt-2 font-semibold">{p.name}</h3>
+
               <div className="text-sm">{p.weight}</div>
 
               <div className="font-bold">
@@ -49,7 +50,6 @@ export default function Products({ activeCategory, searchQuery }: any) {
                 }).format(p.price)}
               </div>
 
-              {/* Stop click from opening Quick View */}
               <button
                 disabled={p.out_of_stock}
                 onClick={(e) => {
