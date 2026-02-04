@@ -115,9 +115,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const inc = (id: string) =>
-    setItems((prev) =>
-      prev.map((x) => (x.id === id ? { ...x, qty: x.qty + qty } : x))
-    );
+  setItems((prev) =>
+    prev.map((x) => (x.id === id ? { ...x, qty: x.qty + 1 } : x))
+  );
+
 
   const dec = (id: string) =>
     setItems((prev) =>
