@@ -1,27 +1,44 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { getProductsFromSheet } from "../lib/sheetProducts";
+import { getProductsFromSheet, type ProductFromSheet } from "../lib/sheetProducts";
 import { useCart } from "./CartContext";
 import ProductQuickView from "./ProductQuickView";
 
-export default function Products({ activeCategory, searchQuery }: any) {
+type Props = {
+  activeCategory: string;
+  searchQuery: string;
+};
+
+export default function Products({ activeCategory, searchQuery }: Props) {
   const cart = useCart();
-  const [items, setItems] = useState<any[]>([]);
-  const [selected, setSelected] = useState<any>(null);
+  const [items, setItems] = useState<ProductFromSheet[]>([]);
+  const [selected, setSelected] = useState<ProductFromSheet | null>(null);
 
   useEffect(() => {
-    getProductsFromSheet().then(setItems);
+    getProductsFromSheet().then(setItems).catch(() => setItems([]));
   }, []);
 
   const filtered = useMemo(() => {
-    const q = (searchQuery || "").toLowerCase();
-    return items.filter(
-      (p) =>
-        (activeCategory === "All" || p.category === activeCategory) &&
-        (!q || p.name.toLowerCase().includes(q))
-    );
+    const q = (searchQuery || "").toLowerCase().trim();
+    return items.filter((p) => {
+      const okCat = activeCategory === "All" || p.category === activeCategory;
+      const okSearch = !q || p.name.toLowerCase().includes(q);
+      return okCat && okSearch;
+    });
   }, [items, activeCategory, searchQuery]);
+
+  const suggestions = useMemo(() => {
+    if (!selected) return [];
+    // same category suggestions first, then any others
+    const sameCat = items.filter(
+      (x) => x.id !== selected.id && x.category === selected.category && x.is_live !== false
+    );
+    const other = items.filter(
+      (x) => x.id !== selected.id && x.category !== selected.category && x.is_live !== false
+    );
+    return [...sameCat, ...other].slice(0, 8);
+  }, [items, selected]);
 
   return (
     <>
@@ -30,53 +47,60 @@ export default function Products({ activeCategory, searchQuery }: any) {
           {filtered.map((p) => (
             <div
               key={p.id}
-              className="group bg-white rounded-2xl border border-[#eee] overflow-hidden cursor-pointer transition hover:shadow-lg"
+              className={[
+                "group rounded-2xl border border-[#eadfcd] bg-white/70",
+                "shadow-sm hover:shadow-md transition overflow-hidden cursor-pointer",
+              ].join(" ")}
               onClick={() => setSelected(p)}
             >
-              {/* Image */}
-              <div className="relative aspect-square bg-[#faf7f2] overflow-hidden">
+              <div className="relative aspect-[4/3] bg-[#faf7f2] overflow-hidden">
                 <img
                   src={p.image}
                   alt={p.name}
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="h-full w-full object-cover group-hover:scale-[1.03] transition"
+                  loading="lazy"
                 />
-
-                {p.out_of_stock && (
-                  <div className="absolute inset-0 bg-white/80 grid place-items-center text-sm font-semibold text-gray-700">
-                    Out of Stock
-                  </div>
-                )}
               </div>
 
-              {/* Content */}
-              <div className="p-3 flex flex-col gap-1">
-                <div className="text-xs text-gray-500 truncate">
+              <div className="p-3 sm:p-4">
+                <div className="text-[11px] text-[#c9a36a] font-semibold truncate">
                   {p.category}
                 </div>
 
-                <h3 className="text-sm font-semibold leading-snug line-clamp-2 min-h-[2.5rem]">
+                <h3 className="mt-1 font-semibold text-[#2c1f14] leading-snug line-clamp-2">
                   {p.name}
                 </h3>
 
-                <div className="text-xs text-gray-500">{p.weight}</div>
+                <div className="mt-2 flex items-center justify-between gap-2">
+                  <div className="text-sm text-[#6b5a4a]">{p.weight}</div>
 
-                <div className="mt-1 font-bold text-base">
-                  {new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                  }).format(p.price)}
+                  <div className="text-sm font-bold text-[#2c1f14]">
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    }).format(Number(p.price ?? 0))}
+                  </div>
                 </div>
 
                 <button
-                  disabled={p.out_of_stock}
+                  disabled={p.out_of_stock || p.is_live === false}
                   onClick={(e) => {
                     e.stopPropagation();
                     cart.add(p, 1);
                   }}
-                  className="mt-2 w-full rounded-xl border border-[#2f4a3a] text-[#2f4a3a] py-1.5 text-sm font-semibold hover:bg-[#2f4a3a] hover:text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className={[
+                    "mt-3 w-full h-10 rounded-xl font-semibold transition",
+                    p.out_of_stock || p.is_live === false
+                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                      : "bg-[#2f4a3a] text-white hover:brightness-110",
+                  ].join(" ")}
                 >
-                  Add to Cart
+                  {p.out_of_stock ? "Out of Stock" : "Add"}
                 </button>
+
+                <div className="mt-2 text-xs text-[#6b5a4a] opacity-70">
+                  Tap card for Quick View
+                </div>
               </div>
             </div>
           ))}
@@ -85,9 +109,11 @@ export default function Products({ activeCategory, searchQuery }: any) {
 
       {selected && (
         <ProductQuickView
-          product={selected}
+          product={selected as any}
+          suggestions={suggestions as any}
+          onOpenSuggestion={(p: any) => setSelected(p)}
           onClose={() => setSelected(null)}
-          onAdd={(p, qty) => cart.add(p, qty)}
+          onAdd={(p: any, qty: number) => cart.add(p, qty)}
         />
       )}
     </>
