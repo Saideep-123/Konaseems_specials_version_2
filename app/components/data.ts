@@ -12,6 +12,8 @@ export const CATEGORIES = [
   "Veg Pickles",
   "Non-Veg Pickles",
   "Oils & Ghee",
+  "Combos & Value Packs",
+  
 ] as const;
 
 export type ProductWithHighlights = Product & { highlights: string[] };
