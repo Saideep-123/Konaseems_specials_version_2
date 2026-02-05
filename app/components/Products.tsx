@@ -15,9 +15,19 @@ export default function Products({ activeCategory, searchQuery }: Props) {
   const [items, setItems] = useState<ProductFromSheet[]>([]);
   const [selected, setSelected] = useState<ProductFromSheet | null>(null);
 
-  useEffect(() => {
-    getProductsFromSheet().then(setItems).catch(() => setItems([]));
-  }, []);
+  import { getCombosFromSheet } from "../lib/sheetCombos";
+
+useEffect(() => {
+  Promise.all([
+    getProductsFromSheet(),
+    getCombosFromSheet(),
+  ])
+    .then(([products, combos]) => {
+      setItems([...combos, ...products]);
+    })
+    .catch(() => setItems([]));
+}, []);
+
 
   const filtered = useMemo(() => {
     const q = (searchQuery || "").toLowerCase().trim();
