@@ -96,7 +96,8 @@ export default function Products({ activeCategory, searchQuery }: Props) {
  return (
   <>
     {/* COMBO STRIP */}
-    {combos.length > 0 && (
+    {activeCategory === "All" && combos.length > 0 && (
+
       <section className="px-4 sm:px-6 mt-12 mb-6">
         <h2 className="text-[36px] font-semibold tracking-tight mb-6">
           Combos & Value Packs
