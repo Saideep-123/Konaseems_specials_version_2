@@ -27,13 +27,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-cream text-brown">
         {/* Premium scrolling bar (continuous) */}
         <div className="w-full bg-black text-white text-sm overflow-hidden">
-          <div className="marquee">
-            <div className="marquee__inner">
-              <div className="marquee__item">{text}</div>
-              <div className="marquee__item">{text}</div>
-            </div>
-          </div>
-        </div>
+  <div className="marquee">
+    <div className="marquee__inner">
+      <span className="marquee__item">
+        🚚 Free Shipping · 🌿 100% Handmade · ⭐ 4.8 Rated · 🎁 Combo Deals
+      </span>
+      <span className="marquee__item">
+        🚚 Free Shipping · 🌿 100% Handmade · ⭐ 4.8 Rated · 🎁 Combo Deals
+      </span>
+      <span className="marquee__item">
+        🚚 Free Shipping · 🌿 100% Handmade · ⭐ 4.8 Rated · 🎁 Combo Deals
+      </span>
+      <span className="marquee__item">
+        🚚 Free Shipping · 🌿 100% Handmade · ⭐ 4.8 Rated · 🎁 Combo Deals
+      </span>
+    </div>
+  </div>
+</div>
 
         <Providers>{children}</Providers>
       </body>
