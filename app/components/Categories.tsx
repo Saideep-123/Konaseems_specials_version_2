@@ -72,9 +72,17 @@ export default function Categories({
         {/* CATEGORY PILLS */}
         <div className="flex flex-wrap gap-3">
           {CATEGORIES.map((c: string) => (
-            <button
-              key={c}
-              onClick={() => setActive(c)}
+  <button
+    key={c}
+    onClick={() => {
+      // toggle category
+      if (active === c) {
+        setActive("All"); // unselect → show all
+      } else {
+        setActive(c);
+      }
+    }}
+
               className={`px-5 py-2 rounded-full text-[14px] tracking-wide transition
                 ${
                   active === c
