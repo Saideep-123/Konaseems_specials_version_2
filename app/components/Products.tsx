@@ -124,30 +124,19 @@ export default function Products({ activeCategory, searchQuery }: Props) {
                   />
                 </div>
 
-                {/* Items */}
-                <div className="px-4 py-4">
-                  <ul className="space-y-2 text-sm text-[#5c4a3c]">
-                    {c.items?.slice(0, 6).map((it, idx) => (
-                      <li key={idx} className="flex gap-2">
-                        <span>✓</span>
-                        <span>
-                          {it.name}
-                          {it.weight ? ` – ${it.weight}` : ""}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
+                {/* Footer */}
+<div className="px-3 py-3">
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      setSelected(c);
+    }}
+    className="w-full text-center font-semibold text-[#2f4a3a] border-t border-[#efe4d6] pt-3 hover:underline"
+  >
+    View Combo &gt;
+  </button>
+</div>
 
-                 <button
-  onClick={(e) => {
-    e.stopPropagation();
-    setSelected(c);
-  }}
-                    className="mt-5 w-full text-center font-semibold text-[#2f4a3a] border-t border-[#efe4d6] pt-4 hover:underline"
-                  >
-                    View Combo &gt;
-                  </button>
-                </div>
               </div>
             ))}
           </div>
