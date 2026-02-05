@@ -125,17 +125,21 @@ export default function Products({ activeCategory, searchQuery }: Props) {
                 </div>
 
                 {/* Footer */}
-<div className="px-3 py-3">
-  <button
-    onClick={(e) => {
-      e.stopPropagation();
-      setSelected(c);
-    }}
-    className="w-full text-center font-semibold text-[#2f4a3a] border-t border-[#efe4d6] pt-3 hover:underline"
-  >
-    View Combo &gt;
-  </button>
+<div className="px-3 py-3 border-t border-[#efe4d6]">
+  <div className="flex items-center justify-between">
+    <div className="text-sm text-[#6b5a4a]">
+      {c.total_weight}
+    </div>
+
+    <div className="text-sm font-bold text-[#2c1f14]">
+      {new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(Number(c.price ?? 0))}
+    </div>
+  </div>
 </div>
+
 
               </div>
             ))}
