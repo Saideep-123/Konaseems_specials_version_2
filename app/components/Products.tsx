@@ -100,10 +100,11 @@ export default function Products({ activeCategory, searchQuery }: Props) {
 
             {combos.slice(0, 5).map((c) => (
               <div
-                key={c.id}
-                className="rounded-xl border border-[#eadfcd] bg-white/70 shadow-sm overflow-hidden"
+  key={c.id}
+  onClick={() => setSelected(c)}
+  className="rounded-xl border border-[#eadfcd] bg-white/70 shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition"
+>
 
-              >
                 {/* Title */}
                 <div className="px-4 pt-4 pb-3 flex items-start justify-between gap-3">
                   <h3 className="text-lg font-semibold text-[#2c1f14] leading-snug">
@@ -137,8 +138,11 @@ export default function Products({ activeCategory, searchQuery }: Props) {
                     ))}
                   </ul>
 
-                  <button
-                    onClick={() => setSelected(c)}
+                 <button
+  onClick={(e) => {
+    e.stopPropagation();
+    setSelected(c);
+  }}
                     className="mt-5 w-full text-center font-semibold text-[#2f4a3a] border-t border-[#efe4d6] pt-4 hover:underline"
                   >
                     View Combo &gt;
