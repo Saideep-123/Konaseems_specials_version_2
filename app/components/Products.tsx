@@ -5,7 +5,7 @@ import {
   getProductsFromSheet,
   type ProductFromSheet,
 } from "../lib/sheetProducts";
-import { getCombosFromSheet } from "../lib/sheetCombos"; // ✅ MUST be here
+import { getCombosFromSheet } from "../lib/sheetCombos";
 import { useCart } from "./CartContext";
 import ProductQuickView from "./ProductQuickView";
 
@@ -14,75 +14,149 @@ type Props = {
   searchQuery: string;
 };
 
+type Combo = ProductFromSheet & {
+  is_combo?: boolean;
+  items?: { name: string; weight?: string }[];
+};
+
 export default function Products({ activeCategory, searchQuery }: Props) {
   const cart = useCart();
 
-  // NOTE: combos are compatible with ProductFromSheet at runtime
-  const [items, setItems] = useState<ProductFromSheet[]>([]);
-  const [selected, setSelected] = useState<ProductFromSheet | null>(null);
+  const [products, setProducts] = useState<ProductFromSheet[]>([]);
+  const [combos, setCombos] = useState<Combo[]>([]);
+  const [selected, setSelected] = useState<any>(null);
 
-  // ✅ Load products + combos together
+  /* =========================================
+     LOAD PRODUCTS + COMBOS
+  ========================================= */
   useEffect(() => {
-  async function load() {
-    try {
-      const products = await getProductsFromSheet();
-      setItems(products); // ✅ products always load
-    } catch {
-      setItems([]);
-      return;
+    async function load() {
+      try {
+        const p = await getProductsFromSheet();
+        setProducts(p);
+      } catch {
+        setProducts([]);
+      }
+
+      try {
+        const c = await getCombosFromSheet();
+        setCombos(c as any);
+      } catch {
+        console.warn("Combos failed to load");
+      }
     }
 
-    // try combos separately (non-blocking)
-    try {
-      const combos = await getCombosFromSheet();
-      setItems((prev) => [...(combos as any), ...prev]);
-    } catch {
-      // ❌ ignore combo failure
-      console.warn("Combos failed to load");
-    }
-  }
+    load();
+  }, []);
 
-  load();
-}, []);
-
-
-  const filtered = useMemo(() => {
+  /* =========================================
+     FILTER PRODUCTS ONLY
+  ========================================= */
+  const filteredProducts = useMemo(() => {
     const q = (searchQuery || "").toLowerCase().trim();
-    return items.filter((p) => {
+    return products.filter((p) => {
       const okCat = activeCategory === "All" || p.category === activeCategory;
       const okSearch = !q || p.name.toLowerCase().includes(q);
       return okCat && okSearch;
     });
-  }, [items, activeCategory, searchQuery]);
+  }, [products, activeCategory, searchQuery]);
 
+  /* =========================================
+     SUGGESTIONS (ONLY FOR NORMAL PRODUCTS)
+  ========================================= */
   const suggestions = useMemo(() => {
-    if (!selected) return [];
-    const sameCat = items.filter(
+    if (!selected || selected?.is_combo) return [];
+
+    const sameCat = products.filter(
       (x) =>
         x.id !== selected.id &&
         x.category === selected.category &&
         x.is_live !== false
     );
-    const other = items.filter(
+
+    const other = products.filter(
       (x) =>
         x.id !== selected.id &&
         x.category !== selected.category &&
         x.is_live !== false
     );
+
     return [...sameCat, ...other].slice(0, 8);
-  }, [items, selected]);
+  }, [products, selected]);
 
   return (
     <>
+      {/* =========================================
+         COMBO SECTION (SEPARATE GRID)
+      ========================================= */}
+      {combos.length > 0 && (
+        <section className="px-4 sm:px-6 pt-6 pb-10">
+          <h2 className="text-3xl sm:text-4xl font-semibold text-[#2c1f14]">
+            Combos & Value Packs
+          </h2>
+
+          <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {combos.slice(0, 5).map((c) => (
+              <div
+                key={c.id}
+                className="rounded-2xl border border-[#eadfcd] bg-white/70 shadow-sm overflow-hidden"
+              >
+                {/* Title */}
+                <div className="px-4 pt-4 pb-3 flex items-start justify-between gap-3">
+                  <h3 className="text-lg font-semibold text-[#2c1f14] leading-snug">
+                    {c.name}
+                  </h3>
+                  <span className="text-[11px] font-semibold px-2 py-1 rounded-md bg-[#c9a36a] text-white">
+                    COMBO
+                  </span>
+                </div>
+
+                {/* Image */}
+                <div className="relative aspect-[16/9] bg-[#faf7f2] overflow-hidden">
+                  <img
+                    src={c.image}
+                    alt={c.name}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+
+                {/* Items */}
+                <div className="px-4 py-4">
+                  <ul className="space-y-2 text-sm text-[#5c4a3c]">
+                    {c.items?.slice(0, 6).map((it, idx) => (
+                      <li key={idx} className="flex gap-2">
+                        <span>✓</span>
+                        <span>
+                          {it.name}
+                          {it.weight ? ` – ${it.weight}` : ""}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button
+                    onClick={() => setSelected(c)}
+                    className="mt-5 w-full text-center font-semibold text-[#2f4a3a] border-t border-[#efe4d6] pt-4 hover:underline"
+                  >
+                    View Combo &gt;
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* =========================================
+         NORMAL PRODUCTS GRID (UNCHANGED)
+      ========================================= */}
       <section className="px-4 sm:px-6 pb-24">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {filtered.map((p) => (
+          {filteredProducts.map((p) => (
             <div
               key={p.id}
-              className={[
-                "group rounded-2xl border border-[#eadfcd] bg-white/70",
-                "shadow-sm hover:shadow-md transition overflow-hidden cursor-pointer",
-              ].join(" ")}
+              className="group rounded-2xl border border-[#eadfcd] bg-white/70
+                         shadow-sm hover:shadow-md transition overflow-hidden cursor-pointer"
               onClick={() => setSelected(p)}
             >
               <div className="relative aspect-[4/3] bg-[#faf7f2] overflow-hidden">
@@ -139,10 +213,11 @@ export default function Products({ activeCategory, searchQuery }: Props) {
         </div>
       </section>
 
+      {/* QUICK VIEW */}
       {selected && (
         <ProductQuickView
-          product={selected as any}
-          suggestions={suggestions as any}
+          product={selected}
+          suggestions={suggestions}
           onOpenSuggestion={(p: any) => setSelected(p)}
           onClose={() => setSelected(null)}
           onAdd={(p: any, qty: number) => cart.add(p, qty)}
