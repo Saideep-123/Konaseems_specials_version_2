@@ -2,17 +2,21 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+/* =========================================================
+   TYPES
+========================================================= */
+
 export type ProductLike = {
   id: string;
   name: string;
   category: string;
   image: string;
 
-  // ✅ sheet flags
+  // sheet flags
   out_of_stock?: boolean;
   is_live?: boolean;
 
-  // ✅ multi-pack prices from sheet
+  // multi-pack prices
   prices?: {
     "250g"?: number;
     "500g"?: number;
@@ -23,9 +27,13 @@ export type ProductLike = {
   desc?: string;
   highlights?: string[];
 
-  // defaults from sheet mapping (optional)
+  // defaults
   weight?: "250g" | "500g" | "1kg";
-  price?: number; // fallback if you still pass single price
+  price?: number;
+
+  // ✅ COMBO SUPPORT
+  is_combo?: boolean;
+  items?: { name: string; weight?: string }[];
 };
 
 type Props = {
@@ -33,15 +41,18 @@ type Props = {
   suggestions?: ProductLike[];
   onOpenSuggestion?: (p: ProductLike) => void;
   onClose: () => void;
-
-  // ✅ keep your existing cart add signature
   onAdd: (payload: any, qty: number) => void;
 };
 
+/* =========================================================
+   HELPERS
+========================================================= */
+
 const usd = (n: number) =>
-  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
-    Number.isFinite(n) ? n : 0
-  );
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(Number.isFinite(n) ? n : 0);
 
 function fallbackHighlights(p: ProductLike): string[] {
   const cat = (p.category || "").toLowerCase();
@@ -79,6 +90,10 @@ function fallbackHighlights(p: ProductLike): string[] {
 
 const WEIGHTS: Array<"250g" | "500g" | "1kg"> = ["250g", "500g", "1kg"];
 
+/* =========================================================
+   COMPONENT
+========================================================= */
+
 export default function ProductQuickView({
   product,
   suggestions = [],
@@ -86,7 +101,102 @@ export default function ProductQuickView({
   onClose,
   onAdd,
 }: Props) {
-  // ✅ default weight: product.weight -> first available -> "250g"
+  /* ======================================================
+     🔥 COMBO QUICK VIEW
+  ====================================================== */
+  if (product.is_combo && product.items) {
+    useEffect(() => {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }, []);
+
+    return (
+      <div className="fixed inset-0 z-[9999]">
+        <div className="absolute inset-0 bg-black/45" onClick={onClose} />
+
+        <div className="absolute inset-0 flex items-end md:items-center md:justify-center">
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="w-full md:max-w-3xl bg-[#fffaf2] border border-[#e8dccb]
+                       rounded-t-3xl md:rounded-2xl max-h-[92dvh]
+                       overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="relative px-5 pt-4 pb-4 border-b border-[#efe4d6]">
+              <div className="text-[12px] text-[#c9a36a] font-semibold">
+                Combo Pack
+              </div>
+
+              <h3 className="mt-1 text-2xl font-semibold text-[#2c1f14]">
+                {product.name}
+              </h3>
+
+              <button
+                onClick={onClose}
+                className="absolute right-4 top-4 h-10 w-10 rounded-full
+                           bg-white/70 border border-[#e8dccb] text-xl"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Image */}
+            <div className="h-[240px] bg-[#faf7f2]">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            {/* Items */}
+            <div className="flex-1 overflow-y-auto p-5">
+              <div className="text-sm font-semibold text-[#2c1f14] mb-3">
+                Included Items
+              </div>
+
+              <ul className="space-y-2 text-sm text-[#5c4a3c]">
+                {product.items.map((it, i) => (
+                  <li key={i} className="flex gap-2">
+                    <span>✓</span>
+                    <span>
+                      {it.name}
+                      {it.weight ? ` – ${it.weight}` : ""}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Add */}
+            <div className="border-t border-[#efe4d6] bg-[#fffaf2] px-5 py-4">
+              <button
+                type="button"
+                onClick={() => {
+                  onAdd(product, 1);
+                  onClose();
+                }}
+                className="w-full h-12 rounded-2xl font-semibold
+                           bg-[#2f4a3a] text-white hover:brightness-110"
+              >
+                Add Combo to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ======================================================
+     ✅ NORMAL PRODUCT QUICK VIEW
+  ====================================================== */
+
   const defaultWeight = useMemo<"250g" | "500g" | "1kg">(() => {
     const p = product.prices || {};
     if (product.weight) return product.weight;
@@ -97,9 +207,9 @@ export default function ProductQuickView({
   }, [product.weight, product.prices]);
 
   const [qty, setQty] = useState(1);
-  const [weight, setWeight] = useState<"250g" | "500g" | "1kg">(defaultWeight);
+  const [weight, setWeight] =
+    useState<"250g" | "500g" | "1kg">(defaultWeight);
 
-  // keep weight in sync when opening a new product
   useEffect(() => {
     setQty(1);
     setWeight(defaultWeight);
@@ -111,20 +221,17 @@ export default function ProductQuickView({
   }, [product]);
 
   const unitPrice = useMemo(() => {
-    // ✅ prefer multi-pack prices; fallback to product.price
     const p = product.prices || {};
     const val = p[weight];
-    if (typeof val === "number" && Number.isFinite(val) && val > 0) return val;
-
-    const fallback = Number(product.price ?? 0);
-    return Number.isFinite(fallback) ? fallback : 0;
+    if (typeof val === "number" && val > 0) return val;
+    return Number(product.price ?? 0);
   }, [product.prices, product.price, weight]);
 
-  const totalPrice = useMemo(() => unitPrice * qty, [unitPrice, qty]);
+  const totalPrice = unitPrice * qty;
+  const disabled = !!product.out_of_stock || product.is_live === false;
 
-  // Lock background scroll
   useEffect(() => {
-    const prevOverflow = document.body.style.overflow;
+    const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     const onKey = (e: KeyboardEvent) => {
@@ -133,15 +240,12 @@ export default function ProductQuickView({
     window.addEventListener("keydown", onKey);
 
     return () => {
-      document.body.style.overflow = prevOverflow;
+      document.body.style.overflow = prev;
       window.removeEventListener("keydown", onKey);
     };
   }, [onClose]);
 
-  const disabled = !!product.out_of_stock || product.is_live === false;
-
   const handleAdd = () => {
-    // ✅ attach selected weight + unitPrice so cart/checkout can show it
     onAdd(
       {
         ...product,
@@ -153,21 +257,21 @@ export default function ProductQuickView({
     onClose();
   };
 
+  /* ======================================================
+     UI
+  ====================================================== */
+
   return (
     <div className="fixed inset-0 z-[9999]">
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/45" onClick={onClose} />
 
       <div className="absolute inset-0 flex items-end md:items-center md:justify-center">
         <div
           role="dialog"
           aria-modal="true"
-          className={[
-            "w-full md:max-w-4xl bg-[#fffaf2] border border-[#e8dccb] shadow-2xl",
-            "rounded-t-3xl md:rounded-2xl",
-            "max-h-[92dvh] md:max-h-[calc(100dvh-3rem)]",
-            "overflow-hidden flex flex-col",
-          ].join(" ")}
+          className="w-full md:max-w-4xl bg-[#fffaf2] border border-[#e8dccb] shadow-2xl
+                     rounded-t-3xl md:rounded-2xl max-h-[92dvh]
+                     overflow-hidden flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Grab handle */}
@@ -177,71 +281,61 @@ export default function ProductQuickView({
 
           {/* Header */}
           <div className="relative px-5 pt-3 pb-4 md:px-6 md:pt-6 border-b border-[#efe4d6]">
-            <div className="text-[12px] text-[#c9a36a] font-semibold tracking-wide">
+            <div className="text-[12px] text-[#c9a36a] font-semibold">
               {product.category}
             </div>
 
-            <div className="mt-1 pr-12">
-              <h3 className="text-2xl md:text-3xl font-semibold text-[#2c1f14] leading-tight">
-                {product.name}
-              </h3>
-              {product.desc && (
-                <p className="mt-2 text-sm text-[#6b5a4a]">{product.desc}</p>
-              )}
-            </div>
+            <h3 className="mt-1 text-2xl md:text-3xl font-semibold text-[#2c1f14] pr-12">
+              {product.name}
+            </h3>
+
+            {product.desc && (
+              <p className="mt-2 text-sm text-[#6b5a4a]">{product.desc}</p>
+            )}
 
             <button
-              type="button"
               onClick={onClose}
-              className="absolute right-4 top-3 md:right-5 md:top-5 h-10 w-10 rounded-full grid place-items-center bg-white/70 hover:bg-white border border-[#e8dccb] text-xl leading-none"
-              aria-label="Close"
+              className="absolute right-4 top-3 md:right-5 md:top-5 h-10 w-10
+                         rounded-full bg-white/70 border border-[#e8dccb] text-xl"
             >
               ×
             </button>
           </div>
 
-          {/* Scroll area */}
-          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]">
+          {/* Scroll */}
+          <div className="flex-1 overflow-y-auto">
             <div className="grid grid-cols-1 md:grid-cols-2">
               {/* Image */}
-              <div className="relative bg-[#faf7f2]">
-                <div className="relative w-full h-[240px] md:h-full min-h-[240px] overflow-hidden">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
+              <div className="bg-[#faf7f2]">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-[260px] md:h-full object-cover"
+                />
               </div>
 
               {/* Details */}
               <div className="p-5 md:p-7">
-                {/* Weight selector */}
+                {/* Weight */}
                 <div className="text-sm font-semibold text-[#2c1f14]">
                   Select weight
                 </div>
 
-                <div className="mt-2 flex flex-wrap gap-2">
+                <div className="mt-2 flex gap-2 flex-wrap">
                   {WEIGHTS.map((w) => {
                     const available =
-                      (product.prices?.[w] ?? 0) > 0 ||
-                      // if no multi prices, allow anyway
-                      !product.prices;
-                    const active = weight === w;
-
+                      (product.prices?.[w] ?? 0) > 0 || !product.prices;
                     return (
                       <button
                         key={w}
-                        type="button"
                         disabled={!available}
                         onClick={() => setWeight(w)}
                         className={[
-                          "px-4 py-2 rounded-full text-sm border transition",
-                          active
-                            ? "bg-[#2f4a3a] text-white border-[#2f4a3a]"
-                            : "bg-white text-[#2c1f14] border-[#e8dccb] hover:border-[#c9a36a]",
-                          !available ? "opacity-40 cursor-not-allowed" : "",
+                          "px-4 py-2 rounded-full border text-sm",
+                          weight === w
+                            ? "bg-[#2f4a3a] text-white"
+                            : "bg-white",
+                          !available && "opacity-40 cursor-not-allowed",
                         ].join(" ")}
                       >
                         {w}
@@ -250,54 +344,40 @@ export default function ProductQuickView({
                   })}
                 </div>
 
-                {/* Unit price */}
+                {/* Price */}
                 <div className="mt-4 text-2xl font-bold text-[#2c1f14]">
                   {usd(unitPrice)}
-                  <span className="ml-2 text-sm font-semibold text-[#6b5a4a]">
-                    / {weight}
-                  </span>
+                  <span className="ml-2 text-sm text-[#6b5a4a]">/ {weight}</span>
                 </div>
 
-                {/* ✅ Quantity (RESTORED) */}
+                {/* Quantity */}
                 <div className="mt-6">
-                  <div className="text-sm font-semibold text-[#2c1f14] mb-2">
-                    Quantity
-                  </div>
-
-                  <div className="inline-flex items-center rounded-xl border border-[#e8dccb] bg-white overflow-hidden">
+                  <div className="text-sm font-semibold mb-2">Quantity</div>
+                  <div className="flex items-center border rounded-xl w-fit">
                     <button
-                      type="button"
                       onClick={() => setQty((q) => Math.max(1, q - 1))}
-                      className="w-12 h-10 grid place-items-center text-xl text-[#2c1f14] hover:bg-[#faf7f2]"
-                      aria-label="Decrease quantity"
+                      className="w-10 h-10 text-xl"
                     >
                       −
                     </button>
-
-                    <div className="w-14 h-10 grid place-items-center font-semibold text-[#2c1f14]">
-                      {qty}
-                    </div>
-
+                    <div className="w-10 text-center font-semibold">{qty}</div>
                     <button
-                      type="button"
                       onClick={() => setQty((q) => q + 1)}
-                      className="w-12 h-10 grid place-items-center text-xl text-[#2c1f14] hover:bg-[#faf7f2]"
-                      aria-label="Increase quantity"
+                      className="w-10 h-10 text-xl"
                     >
                       +
                     </button>
                   </div>
                 </div>
 
-                {/* Details */}
+                {/* Highlights */}
                 <div className="mt-6">
-                  <div className="text-sm font-semibold text-[#2c1f14] mb-2">
+                  <div className="text-sm font-semibold mb-2">
                     Product details
                   </div>
-
-                  <ul className="space-y-2 text-sm text-[#5c4a3c] list-disc pl-5">
-                    {highlights.map((h, idx) => (
-                      <li key={idx}>{h}</li>
+                  <ul className="list-disc pl-5 text-sm space-y-1">
+                    {highlights.map((h, i) => (
+                      <li key={i}>{h}</li>
                     ))}
                   </ul>
                 </div>
@@ -305,37 +385,23 @@ export default function ProductQuickView({
                 {/* Suggestions */}
                 {suggestions.length > 0 && (
                   <div className="mt-10">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="text-sm font-semibold text-[#2c1f14]">
-                        You may also like
-                      </div>
-                      <div className="text-xs text-[#6b5a4a]">Tap to open</div>
+                    <div className="text-sm font-semibold mb-3">
+                      You may also like
                     </div>
-
-                    <div className="flex gap-3 overflow-x-auto pb-2 [-webkit-overflow-scrolling:touch]">
+                    <div className="flex gap-3 overflow-x-auto">
                       {suggestions.slice(0, 8).map((s) => (
                         <button
                           key={s.id}
-                          type="button"
                           onClick={() => onOpenSuggestion?.(s)}
-                          className="shrink-0 w-[170px] rounded-2xl border border-[#e8dccb] bg-white overflow-hidden text-left hover:shadow-md transition"
+                          className="w-[160px] shrink-0 border rounded-xl overflow-hidden"
                         >
-                          <div className="h-[92px] w-full overflow-hidden bg-[#faf7f2]">
-                            <img
-                              src={s.image}
-                              alt={s.name}
-                              className="h-full w-full object-cover"
-                              loading="lazy"
-                            />
-                          </div>
-
-                          <div className="p-3">
-                            <div className="text-[12px] text-[#c9a36a] font-semibold truncate">
-                              {s.category}
-                            </div>
-                            <div className="mt-0.5 text-sm font-semibold text-[#2c1f14] truncate">
-                              {s.name}
-                            </div>
+                          <img
+                            src={s.image}
+                            alt={s.name}
+                            className="h-[90px] w-full object-cover"
+                          />
+                          <div className="p-2 text-sm font-semibold truncate">
+                            {s.name}
                           </div>
                         </button>
                       ))}
@@ -343,38 +409,21 @@ export default function ProductQuickView({
                   </div>
                 )}
 
-                <div className="h-28" />
+                <div className="h-24" />
               </div>
             </div>
           </div>
 
-          {/* Sticky bar */}
-          <div className="border-t border-[#efe4d6] bg-[#fffaf2] px-5 py-4 md:px-6">
-            <div className="flex items-center justify-between gap-4">
-              <div className="min-w-0">
-                <div className="text-[12px] text-[#6b5a4a]">Total</div>
-                <div className="text-lg font-bold text-[#2c1f14] truncate">
-                  {usd(totalPrice)}
-                  <span className="ml-2 text-sm font-semibold text-[#6b5a4a]">
-                    ({weight} × {qty})
-                  </span>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleAdd}
-                disabled={disabled}
-                className={[
-                  "shrink-0 h-12 px-6 rounded-2xl font-semibold transition",
-                  disabled
-                    ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                    : "bg-[#2f4a3a] text-white hover:brightness-110",
-                ].join(" ")}
-              >
-                {product.out_of_stock ? "Out of Stock" : "Add to Cart"}
-              </button>
-            </div>
+          {/* Sticky footer */}
+          <div className="border-t bg-[#fffaf2] px-5 py-4 flex justify-between items-center">
+            <div className="font-bold">{usd(totalPrice)}</div>
+            <button
+              disabled={disabled}
+              onClick={handleAdd}
+              className="h-12 px-6 rounded-2xl font-semibold bg-[#2f4a3a] text-white disabled:bg-gray-300"
+            >
+              {product.out_of_stock ? "Out of Stock" : "Add to Cart"}
+            </button>
           </div>
         </div>
       </div>
