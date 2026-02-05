@@ -95,11 +95,13 @@ export default function Products({ activeCategory, searchQuery }: Props) {
             Combos & Value Packs
           </h2>
 
-          <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+
             {combos.slice(0, 5).map((c) => (
               <div
                 key={c.id}
-                className="rounded-2xl border border-[#eadfcd] bg-white/70 shadow-sm overflow-hidden"
+                className="rounded-xl border border-[#eadfcd] bg-white/70 shadow-sm overflow-hidden"
+
               >
                 {/* Title */}
                 <div className="px-4 pt-4 pb-3 flex items-start justify-between gap-3">
