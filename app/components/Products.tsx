@@ -95,7 +95,8 @@ export default function Products({ activeCategory, searchQuery }: Props) {
             Combos & Value Packs
           </h2>
 
-          <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+
 
             {combos.slice(0, 5).map((c) => (
               <div
