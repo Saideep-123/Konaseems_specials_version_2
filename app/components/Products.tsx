@@ -23,13 +23,28 @@ export default function Products({ activeCategory, searchQuery }: Props) {
 
   // ✅ Load products + combos together
   useEffect(() => {
-    Promise.all([getProductsFromSheet(), getCombosFromSheet()])
-      .then(([products, combos]) => {
-        // combos first, then normal products
-        setItems([...(combos as any), ...products]);
-      })
-      .catch(() => setItems([]));
-  }, []);
+  async function load() {
+    try {
+      const products = await getProductsFromSheet();
+      setItems(products); // ✅ products always load
+    } catch {
+      setItems([]);
+      return;
+    }
+
+    // try combos separately (non-blocking)
+    try {
+      const combos = await getCombosFromSheet();
+      setItems((prev) => [...(combos as any), ...prev]);
+    } catch {
+      // ❌ ignore combo failure
+      console.warn("Combos failed to load");
+    }
+  }
+
+  load();
+}, []);
+
 
   const filtered = useMemo(() => {
     const q = (searchQuery || "").toLowerCase().trim();
