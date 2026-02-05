@@ -99,18 +99,60 @@ export default function Products({ activeCategory, searchQuery }: Props) {
          COMBO SECTION (SEPARATE GRID)
       ========================================= */}
       {combos.length > 0 && (
-       <section className="px-4 sm:px-6 mt-12 mb-6">
+  <section className="px-4 sm:px-6 mt-12 mb-6">
+    <h2 className="text-[36px] font-semibold tracking-tight mb-6">
+      Combos & Value Packs
+    </h2>
 
+    {/* Horizontal scroll strip */}
+    <div className="flex gap-4 overflow-x-auto pb-2 [-webkit-overflow-scrolling:touch]">
+      {combos.map((c) => (
+        <div
+          key={c.id}
+          onClick={() => setSelected(c)}
+          className="min-w-[220px] max-w-[220px] rounded-xl border border-[#eadfcd]
+                     bg-white/70 shadow-sm overflow-hidden cursor-pointer
+                     hover:shadow-md transition"
+        >
+          {/* Image */}
+          <div className="relative h-[120px] bg-[#faf7f2] overflow-hidden">
+            <img
+              src={c.image}
+              alt={c.name}
+              className="h-full w-full object-cover"
+            />
+          </div>
 
-          <h2 className="text-[36px] font-semibold tracking-tight mb-6">
+          {/* Content */}
+          <div className="p-3">
+            <div className="text-[11px] text-[#c9a36a] font-semibold mb-1">
+              COMBO
+            </div>
 
-            Combos & Value Packs
-          </h2>
+            <h3 className="text-sm font-semibold text-[#2c1f14] leading-snug line-clamp-2">
+              {c.name}
+            </h3>
 
-          <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+            {/* Price + weight */}
+            <div className="mt-2 flex items-center justify-between">
+              <div className="text-xs text-[#6b5a4a]">
+                {c.total_weight}
+              </div>
 
+              <div className="text-sm font-bold text-[#2c1f14]">
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(Number(c.price ?? 0))}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+)}
 
-            {combos.slice(0, 5).map((c) => (
               <div
   key={c.id}
   onClick={() => setSelected(c)}
