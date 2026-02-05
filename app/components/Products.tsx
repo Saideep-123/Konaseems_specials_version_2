@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { getProductsFromSheet, type ProductFromSheet } from "../lib/sheetProducts";
+import {
+  getProductsFromSheet,
+  type ProductFromSheet,
+} from "../lib/sheetProducts";
+import { getCombosFromSheet } from "../lib/sheetCombos"; // ✅ MUST be here
 import { useCart } from "./CartContext";
 import ProductQuickView from "./ProductQuickView";
 
@@ -12,22 +16,20 @@ type Props = {
 
 export default function Products({ activeCategory, searchQuery }: Props) {
   const cart = useCart();
+
+  // NOTE: combos are compatible with ProductFromSheet at runtime
   const [items, setItems] = useState<ProductFromSheet[]>([]);
   const [selected, setSelected] = useState<ProductFromSheet | null>(null);
 
-  import { getCombosFromSheet } from "../lib/sheetCombos";
-
-useEffect(() => {
-  Promise.all([
-    getProductsFromSheet(),
-    getCombosFromSheet(),
-  ])
-    .then(([products, combos]) => {
-      setItems([...combos, ...products]);
-    })
-    .catch(() => setItems([]));
-}, []);
-
+  // ✅ Load products + combos together
+  useEffect(() => {
+    Promise.all([getProductsFromSheet(), getCombosFromSheet()])
+      .then(([products, combos]) => {
+        // combos first, then normal products
+        setItems([...(combos as any), ...products]);
+      })
+      .catch(() => setItems([]));
+  }, []);
 
   const filtered = useMemo(() => {
     const q = (searchQuery || "").toLowerCase().trim();
@@ -40,12 +42,17 @@ useEffect(() => {
 
   const suggestions = useMemo(() => {
     if (!selected) return [];
-    // same category suggestions first, then any others
     const sameCat = items.filter(
-      (x) => x.id !== selected.id && x.category === selected.category && x.is_live !== false
+      (x) =>
+        x.id !== selected.id &&
+        x.category === selected.category &&
+        x.is_live !== false
     );
     const other = items.filter(
-      (x) => x.id !== selected.id && x.category !== selected.category && x.is_live !== false
+      (x) =>
+        x.id !== selected.id &&
+        x.category !== selected.category &&
+        x.is_live !== false
     );
     return [...sameCat, ...other].slice(0, 8);
   }, [items, selected]);
