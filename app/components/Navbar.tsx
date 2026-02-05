@@ -56,7 +56,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
           {/* Logo -> Home (works on all pages) */}
           <Link href="/" className="brand-logo text-3xl text-brown" aria-label="Go to home">
-       <h2>  Konaseema Specials </h2>    
+         Konaseema Specials   
           </Link>
 
           <div className="hidden md:flex gap-8 font-semibold">
