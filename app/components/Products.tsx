@@ -14,10 +14,19 @@ type Props = {
   searchQuery: string;
 };
 
-type Combo = ProductFromSheet & {
-  is_combo?: boolean;
-  items?: { name: string; weight?: string }[];
+type Combo = {
+  id: string;
+  name: string;
+  category: string;
+  image: string;
+
+  price: number;
+  total_weight: string;
+
+  is_combo: true;
+  items: { name: string; weight?: string }[];
 };
+
 
 export default function Products({ activeCategory, searchQuery }: Props) {
   const cart = useCart();
