@@ -99,9 +99,11 @@ export default function Products({ activeCategory, searchQuery }: Props) {
          COMBO SECTION (SEPARATE GRID)
       ========================================= */}
       {combos.length > 0 && (
-       <section className="px-6 pt-14 pb-10">
+       <section className="px-4 sm:px-6 mt-12 mb-6">
 
-          <h2 className="text-3xl sm:text-4xl font-semibold text-[#2c1f14]">
+
+          <h2 className="text-[36px] font-semibold tracking-tight mb-6">
+
             Combos & Value Packs
           </h2>
 
