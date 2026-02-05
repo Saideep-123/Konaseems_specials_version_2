@@ -9,18 +9,14 @@ export type ComboItem = {
 export type ComboProduct = {
   id: string;
   name: string;
-  category: "Combos";
+  category: "Combos & Value Packs";
   image: string;
-
-  // REQUIRED for quick view
-  is_combo: true;
-
-  // used in product grid
   price: number;
-  weight: string;
-
-  items: ComboItem[];
+  total_weight: string;
+  is_combo: true;
+  items: { name: string; weight: string }[];
 };
+
 
 function parseGViz(json: any) {
   const cols = json.table.cols.map((c: any) => c.label);
@@ -53,18 +49,15 @@ export async function getCombosFromSheet(): Promise<ComboProduct[]> {
 
     if (!comboMap[comboId]) {
       comboMap[comboId] = {
-        id: comboId,
-        name: row.combo_name,
-        category: "Combos",
-        image: row.combo_image,
-
-        is_combo: true,
-
-        price: Number(row.combo_price ?? 0),
-        weight: "Combo",
-
-        items: [],
-      };
+  id: comboId,
+  name: row.combo_name,
+  category: "Combos & Value Packs",
+  image: row.image_url,
+  price: Number(row.price ?? 0),
+  total_weight: row.total_weight,
+  is_combo: true,
+  items: [],
+};
     }
 
     comboMap[comboId].items.push({
