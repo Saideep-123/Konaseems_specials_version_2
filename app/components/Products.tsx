@@ -150,7 +150,8 @@ export default function Products({ activeCategory, searchQuery }: Props) {
     {/* PRODUCTS GRID */}
     <section className="px-4 sm:px-6 pb-24">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-        {filtered.map((p) => (
+       {filteredProducts.map((p) => (
+
           <div
             key={p.id}
             className="group rounded-2xl border border-[#eadfcd] bg-white/70
