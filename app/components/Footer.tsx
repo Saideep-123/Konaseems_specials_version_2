@@ -12,7 +12,7 @@ export default function Footer() {
         <div>
           <h4 className="text-xl mb-3">Contact</h4>
           <div className="opacity-80 space-y-2">
-            <div>Email: <a className="underline" href="mailto:konaseemaspecials@gmail.com">konaseemafspecials@gmail.com</a></div>
+            <div>Email: <a className="underline" href="mailto:konaseemaspecials@gmail.com">konaseemaspecials@gmail.com</a></div>
             <div>WhatsApp: <a className="underline" href="https://wa.me/916305419750" target="_blank">+91 6305419750</a></div>
             <div>Instagram: <a className="underline" href="#" target="_blank">@konaseema_specials</a></div>
           </div>
