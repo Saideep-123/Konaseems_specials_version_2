@@ -1,4 +1,4 @@
-// app/components/data.ts
+/** app/components/data.ts
 import type { Product } from "./CartContext";
 import { PRICE_BY_ID, type PackSize } from "./prices";
 
@@ -18,7 +18,7 @@ export const CATEGORIES = [
 
 export type ProductWithHighlights = Product & { highlights: string[] };
 
-/** Normalize common weights to match PackSize keys in prices.ts */
+/** Normalize common weights to match PackSize keys in prices.ts 
 function normalizePack(weight: string): PackSize | null {
   const w = (weight || "").trim();
 
@@ -57,7 +57,7 @@ function priceFor(id: string, weight: string): number {
  * IMPORTANT:
  * No `price` field here.
  * Price is computed from prices.ts below.
- */
+ 
 const BASE_PRODUCTS: Array<Omit<ProductWithHighlights, "price">> = [
   // ---- Sweets
   {
@@ -1380,3 +1380,4 @@ export const PRODUCTS: ProductWithHighlights[] = BASE_PRODUCTS.map((p) => ({
   ...p,
   price: priceFor(p.id, p.weight),
 }));
+*/
