@@ -18,7 +18,7 @@ export default function Home() {
       <Navbar />
       <CartDrawer />
       <main>
-        <Hero />
+       <Hero products={products} />
         <Categories
   active={active}
   setActive={setActive}
