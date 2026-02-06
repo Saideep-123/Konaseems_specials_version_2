@@ -123,7 +123,7 @@ export default function Page() {
       </div>
     </div>
 
-    {/* Policies (non-clickable) */}
+    {/* Policies */}
     <div>
       <h4 className="font-semibold mb-3 text-[#3b2417]">
         Policies
@@ -159,7 +159,7 @@ export default function Page() {
   <div className="max-w-6xl mx-auto mt-10 pt-6 border-t border-[#e2d2b6] flex flex-col md:flex-row justify-between items-center text-sm text-[#6b5a4a]">
     <p>© {new Date().getFullYear()} Konaseema Foods. All rights reserved.</p>
     <p className="mt-2 md:mt-0">
-      Made with love in Konaseema ❤️
+      Made with love in Konaseema
     </p>
   </div>
 </footer>
