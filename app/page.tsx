@@ -6,8 +6,8 @@ import Categories from "./components/Categories";
 import Products from "./components/Products";
 import CartDrawer from "./components/CartDrawer";
 
-import { getProductsFromSheet } from "./components/sheetProducts";
-import { getCombosFromSheet } from "./components/sheetCombos";
+import { getProductsFromSheet } from "./lib/sheetProducts";
+import { getCombosFromSheet } from "./lib/sheetCombos";
 
 export default function Page() {
   const [products, setProducts] = useState<any[]>([]);
