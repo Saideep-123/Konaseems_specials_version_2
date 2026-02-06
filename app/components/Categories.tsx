@@ -1,25 +1,35 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CATEGORIES, PRODUCTS } from "./data";
+
+const categories = useMemo(() => {
+  const set = new Set<string>();
+  (products || []).forEach((p: any) => {
+    if (p.category) set.add(p.category);
+  });
+  return ["All", ...Array.from(set)];
+}, [products]);
 
 export default function Categories({
   active,
   setActive,
   searchQuery,
   setSearchQuery,
+  products, // receive from parent
 }: any) {
   const [open, setOpen] = useState(false);
 
   const suggestions = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
     if (!q) return [];
-    return PRODUCTS.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)
-    ).slice(0, 6);
-  }, [searchQuery]);
+    return (products || [])
+      .filter(
+        (p: any) =>
+          p.name.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q)
+      )
+      .slice(0, 6);
+  }, [searchQuery, products]);
 
   return (
     <section className="px-6 pt-20 pb-14" id="categories">
@@ -45,7 +55,7 @@ export default function Categories({
             {/* SUGGESTIONS */}
             {open && suggestions.length > 0 && (
               <div className="absolute mt-2 w-full bg-white rounded-xl border border-[#e8dccb] shadow-lg z-50">
-                {suggestions.map((p) => (
+                {suggestions.map((p: any) => (
                   <button
                     key={p.id}
                     onClick={() => {
@@ -71,18 +81,16 @@ export default function Categories({
 
         {/* CATEGORY PILLS */}
         <div className="flex flex-wrap gap-3">
-          {CATEGORIES.map((c: string) => (
-  <button
-    key={c}
-    onClick={() => {
-      // toggle category
-      if (active === c) {
-        setActive("All"); // unselect → show all
-      } else {
-        setActive(c);
-      }
-    }}
-
+          {categories.map((c: string) => (
+            <button
+              key={c}
+              onClick={() => {
+                if (active === c) {
+                  setActive("All");
+                } else {
+                  setActive(c);
+                }
+              }}
               className={`px-5 py-2 rounded-full text-[14px] tracking-wide transition
                 ${
                   active === c
