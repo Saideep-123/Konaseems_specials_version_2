@@ -1,18 +1,22 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { PRODUCTS } from "./data";
 import { useCart } from "./CartContext";
 
-export default function Hero() {
+export default function Hero({ products }: any) {
   const cart = useCart();
 
-  // Pick a special product (you can change to any id later)
-  const special = PRODUCTS.find((p) => p.id === "p1") ?? PRODUCTS[0];
+  // pick first available product as special
+  const special =
+    (products || []).find((p: any) => !p.is_combo) ||
+    (products || [])[0];
+
+  if (!special) return null;
 
   return (
     <section id="home" className="relative pt-20 pb-14 px-6">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        {/* LEFT TEXT */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -27,7 +31,8 @@ export default function Hero() {
           </h1>
 
           <p className="text-lg opacity-80 mb-8 max-w-xl">
-            Classic recipes from Konaseema — made with pure ingredients and packed carefully for delivery.
+            Classic recipes from Konaseema — made with pure ingredients and
+            packed carefully for delivery.
           </p>
 
           <div className="flex flex-wrap gap-4">
@@ -59,7 +64,7 @@ export default function Hero() {
           </div>
         </motion.div>
 
-        {/* RIGHT SIDE: OUR SPECIAL ITEM */}
+        {/* RIGHT SIDE: SPECIAL PRODUCT */}
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -68,7 +73,9 @@ export default function Hero() {
           <div className="premium-card p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <div className="text-sm text-gold font-semibold">Konaseema Special Item</div>
+                <div className="text-sm text-gold font-semibold">
+                  Konaseema Special Item
+                </div>
                 <h3 className="text-3xl mt-1">{special.name}</h3>
                 <div className="opacity-75 mt-1">{special.weight}</div>
               </div>
@@ -82,7 +89,10 @@ export default function Hero() {
             />
 
             <div className="mt-5 flex gap-3">
-              <button className="btn-primary w-full" onClick={() => cart.add(special)}>
+              <button
+                className="btn-primary w-full"
+                onClick={() => cart.add(special)}
+              >
                 Add to Cart
               </button>
 
