@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Categories from "./components/Categories";
 import Products from "./components/Products";
@@ -12,6 +13,7 @@ export default function Page() {
 
   return (
     <>
+      <Navbar />
       <CartDrawer />
 
       <main>
