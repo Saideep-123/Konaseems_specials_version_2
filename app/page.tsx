@@ -43,57 +43,94 @@ export default function Page() {
           searchQuery={searchQuery}
         />
 
-        {/* ===== ORIGINAL ABOUT SECTION ===== */}
-        <section id="about" className="px-6 py-24 bg-[#faf7f2]">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-4xl font-semibold mb-6">
-                About Konaseema Specials
+        {/* ===== ORIGINAL ABOUT + SHIPPING CARDS ===== */}
+        <section id="about" className="px-6 py-20">
+          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
+            {/* About card */}
+            <div className="rounded-2xl border border-[#d9c7a6] bg-[#f8f3ea] p-8 shadow-sm">
+              <h2 className="text-3xl font-semibold mb-4">
+                About Konaseema Foods
               </h2>
 
-              <p className="text-lg opacity-80 leading-relaxed mb-4">
-                We bring authentic homemade sweets and snacks from the
-                heart of Konaseema, prepared using traditional recipes
-                and pure ingredients.
+              <p className="opacity-80 mb-6">
+                We craft authentic Konaseema sweets using traditional recipes
+                and pure ingredients. Every batch is prepared hygienically and
+                packed carefully to preserve freshness and taste.
               </p>
 
-              <p className="text-lg opacity-80 leading-relaxed">
-                Every item is freshly made, hygienically packed,
-                and shipped with care to preserve taste and quality.
-              </p>
+              <ul className="space-y-2 opacity-90">
+                <li>✅ Traditional recipes</li>
+                <li>✅ Quality ingredients</li>
+                <li>✅ Fresh packing</li>
+                <li>✅ Perfect for gifting</li>
+              </ul>
             </div>
 
-            <div className="rounded-2xl overflow-hidden shadow-lg">
-              <img
-                src="/images/combo_1.jpg"
-                alt="Konaseema sweets"
-                className="w-full h-full object-cover"
-              />
+            {/* Shipping card */}
+            <div className="rounded-2xl border border-[#d9c7a6] bg-[#f8f3ea] p-8 shadow-sm">
+              <h2 className="text-3xl font-semibold mb-4">
+                Shipping & Freshness
+              </h2>
+
+              <p className="opacity-80 mb-6">
+                Orders are confirmed via WhatsApp. We pack sweets carefully for
+                safe delivery. For best taste, store in a cool dry place and
+                consume within the mentioned shelf life.
+              </p>
+
+              <div className="rounded-xl border border-[#d9c7a6] p-4">
+                <p className="font-semibold">
+                  Need bulk / gift orders?
+                </p>
+                <p className="opacity-80">
+                  Message us on WhatsApp for custom combo boxes.
+                </p>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* ===== ORIGINAL CONTACT SECTION ===== */}
-        <section id="contact" className="px-6 py-24">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl font-semibold mb-6">
-              Contact Us
-            </h2>
+        {/* ===== FOOTER CONTACT AREA ===== */}
+        <footer id="contact" className="bg-[#efe7db] px-6 py-12">
+          <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="text-xl font-semibold mb-3">
+                Konaseema Foods
+              </h3>
+              <p className="opacity-80">
+                Authentic traditional sweets & snacks.
+                Freshly prepared and packed.
+              </p>
+            </div>
 
-            <p className="text-lg opacity-80 mb-8">
-              For orders, bulk requests, or custom combos,
-              contact us directly on WhatsApp.
-            </p>
+            <div>
+              <h4 className="font-semibold mb-2">Contact</h4>
+              <p className="opacity-80">
+                Email: konaseemafoods@example.com
+              </p>
+            </div>
 
-            <a
-              href="https://wa.me/916305419750"
-              target="_blank"
-              className="btn-primary bg-green-700 hover:bg-green-800"
-            >
-              Chat on WhatsApp
-            </a>
+            <div>
+              <h4 className="font-semibold mb-2">Policies</h4>
+              <p className="opacity-80">Return & Refund Policy</p>
+              <p className="opacity-80">Delivery Policy</p>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-2">Quick Order</h4>
+              <p className="opacity-80 mb-3">
+                Order instantly via WhatsApp.
+              </p>
+              <a
+                href="https://wa.me/916305419750"
+                target="_blank"
+                className="btn-primary bg-green-700 hover:bg-green-800"
+              >
+                Chat on WhatsApp
+              </a>
+            </div>
           </div>
-        </section>
+        </footer>
       </main>
     </>
   );
