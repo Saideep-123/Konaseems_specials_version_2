@@ -2,23 +2,25 @@
 
 import { useMemo, useState } from "react";
 
-const categories = useMemo(() => {
-  const set = new Set<string>();
-  (products || []).forEach((p: any) => {
-    if (p.category) set.add(p.category);
-  });
-  return ["All", ...Array.from(set)];
-}, [products]);
-
 export default function Categories({
   active,
   setActive,
   searchQuery,
   setSearchQuery,
-  products, // receive from parent
+  products, // ← must be passed from parent
 }: any) {
   const [open, setOpen] = useState(false);
 
+  // dynamic categories from sheet
+  const categories = useMemo(() => {
+    const set = new Set<string>();
+    (products || []).forEach((p: any) => {
+      if (p.category) set.add(p.category);
+    });
+    return ["All", ...Array.from(set)];
+  }, [products]);
+
+  // search suggestions
   const suggestions = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
     if (!q) return [];
