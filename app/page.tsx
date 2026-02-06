@@ -93,9 +93,12 @@ export default function Page() {
 
 
         {/* ===== FOOTER CONTACT AREA ===== */}
-        <footer id="contact" className="bg-[#f3ebdf] px-6 py-16 border-t border-[#e2d2b6]">
+
+<footer
+  id="contact"
+  className="bg-[#f3ebdf] px-6 py-16 border-t border-[#e2d2b6]"
+>
   <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-10">
-    
     {/* Brand */}
     <div>
       <h3 className="text-2xl font-semibold mb-4 text-[#3b2417]">
@@ -113,8 +116,20 @@ export default function Page() {
         Contact
       </h4>
       <div className="space-y-2 text-[#5a4a3a]">
-        <p>Email: konaseemafoods@gmail.com</p>
-        <p>WhatsApp: +91 63054 19750</p>
+        <a
+          href="mailto:konaseemafoods@example.com"
+          className="block hover:text-[#3b2417] transition"
+        >
+          Email: konaseemafoods@example.com
+        </a>
+
+        <a
+          href="https://wa.me/916305419750"
+          target="_blank"
+          className="block hover:text-[#3b2417] transition"
+        >
+          WhatsApp: +91 63054 19750
+        </a>
       </div>
     </div>
 
@@ -124,10 +139,16 @@ export default function Page() {
         Policies
       </h4>
       <div className="space-y-2 text-[#5a4a3a]">
-        <a href="#" className="block hover:text-[#3b2417] transition">
+        <a
+          href="#"
+          className="block hover:text-[#3b2417] transition"
+        >
           Return & Refund Policy
         </a>
-        <a href="#" className="block hover:text-[#3b2417] transition">
+        <a
+          href="#"
+          className="block hover:text-[#3b2417] transition"
+        >
           Delivery Policy
         </a>
       </div>
