@@ -68,7 +68,7 @@ export default function Hero() {
           <div className="premium-card p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <div className="text-sm text-gold font-semibold">Our Special Item</div>
+                <div className="text-sm text-gold font-semibold">Konaseema Special Item</div>
                 <h3 className="text-3xl mt-1">{special.name}</h3>
                 <div className="opacity-75 mt-1">{special.weight}</div>
               </div>
