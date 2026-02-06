@@ -36,7 +36,7 @@ export default function Hero() {
             </a>
             <a
               className="btn-primary bg-green-700 hover:bg-green-800"
-              href="https://wa.me/91XXXXXXXXXX"
+              href="https://wa.me/916305419750"
               target="_blank"
             >
               Order on WhatsApp
@@ -89,7 +89,7 @@ export default function Hero() {
               <a
                 className="btn-primary w-full bg-green-700 hover:bg-green-800 text-center"
                 target="_blank"
-                href={`https://wa.me/91XXXXXXXXXX?text=${encodeURIComponent(
+                href={`https://wa.me/916305419750?text=${encodeURIComponent(
                   `Hi Konaseema Foods, I want to order: ${special.name} (${special.weight}) - ₹${special.price}`
                 )}`}
               >
