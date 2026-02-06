@@ -93,47 +93,68 @@ export default function Page() {
 
 
         {/* ===== FOOTER CONTACT AREA ===== */}
-        <footer id="contact" className="bg-[#efe7db] px-6 py-12">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-xl font-semibold mb-3">
-                Konaseema Foods
-              </h3>
-              <p className="opacity-80">
-                Authentic traditional sweets & snacks.
-                Freshly prepared and packed.
-              </p>
-            </div>
+        <footer id="contact" className="bg-[#f3ebdf] px-6 py-16 border-t border-[#e2d2b6]">
+  <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-10">
+    
+    {/* Brand */}
+    <div>
+      <h3 className="text-2xl font-semibold mb-4 text-[#3b2417]">
+        Konaseema Foods
+      </h3>
+      <p className="text-[#5a4a3a] leading-relaxed">
+        Authentic traditional sweets & snacks from Konaseema.
+        Freshly prepared, hygienically packed, and delivered with care.
+      </p>
+    </div>
 
-            <div>
-              <h4 className="font-semibold mb-2">Contact</h4>
-              <p className="opacity-80">
-                Email: konaseemafoods@example.com
-              </p>
-            </div>
+    {/* Contact */}
+    <div>
+      <h4 className="font-semibold mb-4 text-[#3b2417]">
+        Contact
+      </h4>
+      <div className="space-y-2 text-[#5a4a3a]">
+        <p>Email: konaseemafoods@gmail.com</p>
+        <p>WhatsApp: +91 63054 19750</p>
+      </div>
+    </div>
 
-            <div>
-              <h4 className="font-semibold mb-2">Policies</h4>
-              <p className="opacity-80">Return & Refund Policy</p>
-              <p className="opacity-80">Delivery Policy</p>
-            </div>
+    {/* Policies */}
+    <div>
+      <h4 className="font-semibold mb-4 text-[#3b2417]">
+        Policies
+      </h4>
+      <div className="space-y-2 text-[#5a4a3a]">
+        <a href="#" className="block hover:text-[#3b2417] transition">
+          Return & Refund Policy
+        </a>
+        <a href="#" className="block hover:text-[#3b2417] transition">
+          Delivery Policy
+        </a>
+      </div>
+    </div>
 
-            <div>
-              <h4 className="font-semibold mb-2">Quick Order</h4>
-              <p className="opacity-80 mb-3">
-                Order instantly via WhatsApp.
-              </p>
-              <a
-                href="https://wa.me/916305419750"
-                target="_blank"
-                className="btn-primary bg-green-700 hover:bg-green-800"
-              >
-                Chat on WhatsApp
-              </a>
-            </div>
-          </div>
-        </footer>
-      </main>
-    </>
-  );
-}
+    {/* Quick Order */}
+    <div>
+      <h4 className="font-semibold mb-4 text-[#3b2417]">
+        Quick Order
+      </h4>
+      <p className="text-[#5a4a3a] mb-4">
+        Order instantly via WhatsApp.
+      </p>
+
+      <a
+        href="https://wa.me/916305419750"
+        target="_blank"
+        className="inline-block px-6 py-3 rounded-xl bg-[#2f4a3a] text-white font-semibold shadow-md transition hover:brightness-110 hover:-translate-y-0.5"
+      >
+        Chat on WhatsApp
+      </a>
+    </div>
+  </div>
+
+  {/* Bottom bar */}
+  <div className="max-w-6xl mx-auto mt-12 pt-6 border-t border-[#e2d2b6] text-center text-[#6b5a4a] text-sm">
+    © {new Date().getFullYear()} Konaseema Foods. All rights reserved.
+  </div>
+</footer>
+
