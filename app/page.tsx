@@ -20,11 +20,12 @@ export default function Home() {
       <main>
         <Hero />
         <Categories
-          active={activeCategory}
-          setActive={setActiveCategory}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-        />
+  active={active}
+  setActive={setActive}
+  searchQuery={searchQuery}
+  setSearchQuery={setSearchQuery}
+  products={products}
+/>
         <Products activeCategory={activeCategory} searchQuery={searchQuery} />
         <About />
         <Footer />
