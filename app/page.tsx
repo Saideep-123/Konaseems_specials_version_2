@@ -44,51 +44,53 @@ export default function Page() {
         />
 
         {/* ===== ORIGINAL ABOUT + SHIPPING CARDS ===== */}
-        <section id="about" className="px-6 py-20">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
-            {/* About card */}
-            <div className="rounded-2xl border border-[#d9c7a6] bg-[#f8f3ea] p-8 shadow-sm">
-              <h2 className="text-3xl font-semibold mb-4">
-                About Konaseema Foods
-              </h2>
+        <section id="about" className="px-6 py-24 bg-[#f6efe6]">
+  <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
+    
+    {/* About card */}
+    <div className="bg-white border border-[#d6c2a3] rounded-2xl p-8 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+      <h2 className="text-3xl font-semibold mb-4 text-[#3b2417]">
+        About Konaseema Foods
+      </h2>
 
-              <p className="opacity-80 mb-6">
-                We craft authentic Konaseema sweets using traditional recipes
-                and pure ingredients. Every batch is prepared hygienically and
-                packed carefully to preserve freshness and taste.
-              </p>
+      <p className="opacity-80 mb-6 text-[#4a3b2f]">
+        We craft authentic Konaseema sweets using traditional recipes
+        and pure ingredients. Every batch is prepared hygienically and
+        packed carefully to preserve freshness and taste.
+      </p>
 
-              <ul className="space-y-2 opacity-90">
-                <li>✅ Traditional recipes</li>
-                <li>✅ Quality ingredients</li>
-                <li>✅ Fresh packing</li>
-                <li>✅ Perfect for gifting</li>
-              </ul>
-            </div>
+      <ul className="space-y-2 text-[#4a3b2f]">
+        <li>✅ Traditional recipes</li>
+        <li>✅ Quality ingredients</li>
+        <li>✅ Fresh packing</li>
+        <li>✅ Perfect for gifting</li>
+      </ul>
+    </div>
 
-            {/* Shipping card */}
-            <div className="rounded-2xl border border-[#d9c7a6] bg-[#f8f3ea] p-8 shadow-sm">
-              <h2 className="text-3xl font-semibold mb-4">
-                Shipping & Freshness
-              </h2>
+    {/* Shipping card */}
+    <div className="bg-white border border-[#d6c2a3] rounded-2xl p-8 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+      <h2 className="text-3xl font-semibold mb-4 text-[#3b2417]">
+        Shipping & Freshness
+      </h2>
 
-              <p className="opacity-80 mb-6">
-                Orders are confirmed via WhatsApp. We pack sweets carefully for
-                safe delivery. For best taste, store in a cool dry place and
-                consume within the mentioned shelf life.
-              </p>
+      <p className="opacity-80 mb-6 text-[#4a3b2f]">
+        Orders are confirmed via WhatsApp. We pack sweets carefully
+        for safe delivery. For best taste, store in a cool dry place
+        and consume within the mentioned shelf life.
+      </p>
 
-              <div className="rounded-xl border border-[#d9c7a6] p-4">
-                <p className="font-semibold">
-                  Need bulk / gift orders?
-                </p>
-                <p className="opacity-80">
-                  Message us on WhatsApp for custom combo boxes.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+      <div className="border border-[#d6c2a3] rounded-xl p-4 bg-[#faf6ef]">
+        <p className="font-semibold text-[#3b2417]">
+          Need bulk / gift orders?
+        </p>
+        <p className="text-[#4a3b2f]">
+          Message us on WhatsApp for custom combo boxes.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
 
         {/* ===== FOOTER CONTACT AREA ===== */}
         <footer id="contact" className="bg-[#efe7db] px-6 py-12">
