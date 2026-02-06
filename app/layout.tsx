@@ -17,7 +17,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const text =
-    "🚚 Free Shipping · 🌿 100% Handmade · ⭐ 4.8 Rated · 🎁 Combo Deals";
+    "🌿 Traditional Recipes · 🏡 Made in Konaseema · 🎁 Festive Combos · 🚚 Delivered Fresh to Your Door";
 
   return (
     <html
@@ -30,16 +30,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   <div className="marquee">
     <div className="marquee__inner">
       <span className="marquee__item">
-        🚚 Free Shipping · 🌿 100% Handmade · ⭐ 4.8 Rated · 🎁 Combo Deals
+        🌿 Traditional Recipes · 🏡 Made in Konaseema · 🎁 Festive Combos · 🚚 Delivered Fresh to Your Door
       </span>
       <span className="marquee__item">
-        🚚 Free Shipping · 🌿 100% Handmade · ⭐ 4.8 Rated · 🎁 Combo Deals
+        🌿 Traditional Recipes · 🏡 Made in Konaseema · 🎁 Festive Combos · 🚚 Delivered Fresh to Your Door
       </span>
       <span className="marquee__item">
-        🚚 Free Shipping · 🌿 100% Handmade · ⭐ 4.8 Rated · 🎁 Combo Deals
+        🌿 Traditional Recipes · 🏡 Made in Konaseema · 🎁 Festive Combos · 🚚 Delivered Fresh to Your Door
       </span>
       <span className="marquee__item">
-        🚚 Free Shipping · 🌿 100% Handmade · ⭐ 4.8 Rated · 🎁 Combo Deals
+       🌿 Traditional Recipes · 🏡 Made in Konaseema · 🎁 Festive Combos · 🚚 Delivered Fresh to Your Door
       </span>
     </div>
   </div>
