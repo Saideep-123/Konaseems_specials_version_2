@@ -1,4 +1,4 @@
-// app/components/prices.ts
+/** // app/components/prices.ts
 
 export type PackSize =
   | "250g"
@@ -14,7 +14,7 @@ export type PriceTable = Partial<Record<PackSize, number>>;
 /**
  * One place to update prices.
  * Keys MUST match product ids in data.ts (p1..p98).
- */
+ 
 export const PRICE_BY_ID: Record<string, PriceTable> = {
   // ---------------- SWEETS ----------------
   p1: { "250g": 145, "500g": 290, "1kg": 580 }, // Kova
@@ -134,3 +134,4 @@ export const PRICE_BY_ID: Record<string, PriceTable> = {
   p97: { Assorted: 0 },
   p98: { Assorted: 0 },
 };
+*/
