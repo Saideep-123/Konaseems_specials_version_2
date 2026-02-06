@@ -39,7 +39,7 @@ export default function Footer() {
 
       <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-gold opacity-70 text-sm flex flex-wrap gap-3 justify-between">
         <span>© {new Date().getFullYear()} Konaseema Specials. All rights reserved.</span>
-        <span>Made with love in Konaseema </span>
+        <span>Made with love in Konaseema ❤️ </span>
       </div>
     </footer>
   );
