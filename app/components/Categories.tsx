@@ -4,11 +4,15 @@ import { useMemo, useState } from "react";
 
 const CATEGORIES = [
   "All",
-  "Traditional Sweets",
-  "Dry Fruit Sweets",
+  "Healthy Snacks",
+  "Sweets",
   "Snacks",
-  "Pickles",
-  "Gift Boxes",
+  "Podis",
+  "Oils & Ghee",
+  "Veg Pickles",
+  "Non-Veg Pickles",
+  "Essentials",
+
 ];
 
 export default function Categories({
