@@ -44,7 +44,11 @@ export default function Page() {
         />
 
         {/* ===== ABOUT + SHIPPING CARDS ===== */}
-        <section id="about" className="px-6 py-24 bg-[#f6efe6]">
+        <section
+  id="about"
+  className="px-6 py-24 bg-[#f6efe6] border-t border-[#e2d2b6]"
+>
+
           <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
             {/* About card */}
             <div className="bg-white border border-[#d6c2a3] rounded-2xl p-8 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
@@ -91,81 +95,71 @@ export default function Page() {
         </section>
 
         {/* ===== PREMIUM FOOTER ===== */}
-        <footer
-          id="contact"
-          className="bg-[#f3ebdf] px-6 py-16 border-t border-[#e2d2b6]"
-        >
-          <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-10">
-            {/* Brand */}
-            <div>
-              <h3 className="text-2xl font-semibold mb-4 text-[#3b2417]">
-                Konaseema Foods
-              </h3>
-              <p className="text-[#5a4a3a] leading-relaxed">
-                Authentic traditional sweets & snacks from Konaseema.
-                Freshly prepared, hygienically packed, and delivered with care.
-              </p>
-            </div>
+       <footer
+  id="contact"
+  className="bg-[#efe7db] px-6 py-14 border-t border-[#e2d2b6]"
+>
+  <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-10">
+    {/* Brand */}
+    <div>
+      <h3 className="text-2xl font-semibold mb-3 text-[#3b2417]">
+        Konaseema Foods
+      </h3>
+      <p className="text-[#6b5a4a]">
+        Authentic traditional sweets & snacks.
+        Freshly prepared and packed with care.
+      </p>
+    </div>
 
-            {/* Contact */}
-            <div>
-              <h4 className="font-semibold mb-4 text-[#3b2417]">
-                Contact
-              </h4>
-              <div className="space-y-2 text-[#5a4a3a]">
-                <a
-                  href="mailto:konaseemafoods@example.com"
-                  className="block hover:text-[#3b2417] transition"
-                >
-                  Email: konaseemafoods@example.com
-                </a>
+    {/* Contact */}
+    <div>
+      <h4 className="font-semibold mb-3 text-[#3b2417]">
+        Contact
+      </h4>
+      <div className="space-y-2 text-[#6b5a4a]">
+        <p>Email: konaseemafoods@example.com</p>
+        <p>WhatsApp: +91 63054 19750</p>
+        <p>Instagram: @konaseemafoods</p>
+      </div>
+    </div>
 
-                <a
-                  href="https://wa.me/916305419750"
-                  target="_blank"
-                  className="block hover:text-[#3b2417] transition"
-                >
-                  WhatsApp: +91 63054 19750
-                </a>
-              </div>
-            </div>
+    {/* Policies (non-clickable) */}
+    <div>
+      <h4 className="font-semibold mb-3 text-[#3b2417]">
+        Policies
+      </h4>
+      <div className="space-y-2 text-[#6b5a4a]">
+        <p>Return & Refund Policy</p>
+        <p>Delivery Policy</p>
+        <p>Privacy Policy</p>
+        <p>Terms & Conditions</p>
+      </div>
+    </div>
 
-            {/* Policies (non-clickable) */}
-            <div>
-              <h4 className="font-semibold mb-4 text-[#3b2417]">
-                Policies
-              </h4>
-              <div className="space-y-2 text-[#5a4a3a]">
-                <p>Return & Refund Policy</p>
-                <p>Delivery Policy</p>
-              </div>
-            </div>
+    {/* Quick Order */}
+    <div>
+      <h4 className="font-semibold mb-3 text-[#3b2417]">
+        Quick Order
+      </h4>
+      <p className="text-[#6b5a4a] mb-4">
+        Order instantly via WhatsApp.
+      </p>
 
-            {/* Quick Order */}
-            <div>
-              <h4 className="font-semibold mb-4 text-[#3b2417]">
-                Quick Order
-              </h4>
-              <p className="text-[#5a4a3a] mb-4">
-                Order instantly via WhatsApp.
-              </p>
+      <a
+        href="https://wa.me/916305419750"
+        target="_blank"
+        className="inline-block px-6 py-3 rounded-xl bg-[#2f4a3a] text-white font-semibold shadow-sm transition hover:brightness-110"
+      >
+        WhatsApp Now
+      </a>
+    </div>
+  </div>
 
-              <a
-                href="https://wa.me/916305419750"
-                target="_blank"
-                className="inline-block px-6 py-3 rounded-xl bg-[#2f4a3a] text-white font-semibold shadow-md transition hover:brightness-110 hover:-translate-y-0.5"
-              >
-                Chat on WhatsApp
-              </a>
-            </div>
-          </div>
-
-          {/* Bottom bar */}
-          <div className="max-w-6xl mx-auto mt-12 pt-6 border-t border-[#e2d2b6] text-center text-[#6b5a4a] text-sm">
-            © {new Date().getFullYear()} Konaseema Foods. All rights reserved.
-          </div>
-        </footer>
-      </main>
-    </>
-  );
-}
+  {/* Bottom strip */}
+  <div className="max-w-6xl mx-auto mt-10 pt-6 border-t border-[#e2d2b6] flex flex-col md:flex-row justify-between items-center text-sm text-[#6b5a4a]">
+    <p>© {new Date().getFullYear()} Konaseema Foods. All rights reserved.</p>
+    <p className="mt-2 md:mt-0">
+      Made with love in Konaseema ❤️
+    </p>
+  </div>
+</footer>
