@@ -58,15 +58,20 @@ export async function getCombosFromSheet(): Promise<ComboProduct[]> {
 
     if (!comboMap[comboId]) {
       comboMap[comboId] = {
-        id: comboId,
-        name: row.combo_name,
-        category: "Combos & Value Packs",
-        image: row.combo_image,
-        price: Number(row.combo_price ?? 0),
-        total_weight: row.total_weight ?? "",
-        is_combo: true,
-        items: [],
-      };
+  id: comboId,
+  name: row.combo_name,
+  category: "Combos & Value Packs",
+  image: row.combo_image,
+  price: Number(row.combo_price ?? 0),
+
+  // IMPORTANT: cart uses this field
+  weight: row.total_weight ?? "",
+
+  total_weight: row.total_weight ?? "",
+  is_combo: true,
+  items: [],
+};
+
     }
 
     comboMap[comboId].items.push({
