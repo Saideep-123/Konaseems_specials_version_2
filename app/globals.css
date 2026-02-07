@@ -12,8 +12,15 @@ h1, h2, h3 {
   font-family: var(--font-playfair);
 }
 
-.brand-logo {
+/*.brand-logo {
   font-family: var(--font-greatvibes);
+}
+*/
+
+.brand-logo {
+  font-family: var(--font-playfair);
+  font-weight: 900;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.1);
 }
 
 .premium-card {
