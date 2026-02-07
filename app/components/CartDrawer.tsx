@@ -8,6 +8,8 @@ export default function CartDrawer() {
   const cart = useCart();
   const router = useRouter();
 
+  const formatPrice = (v: number) => `$${v.toFixed(2)}`;
+
   return (
     <div
       className={`fixed inset-0 z-50 ${
@@ -61,7 +63,7 @@ export default function CartDrawer() {
                         <div className="opacity-70 text-sm">{i.weight}</div>
                       </div>
                       <div className="font-bold">
-                        ${i.price ?? 0}
+                        {formatPrice(i.price ?? 0)}
                       </div>
                     </div>
 
@@ -100,7 +102,7 @@ export default function CartDrawer() {
                     <div className="mt-2 text-sm opacity-70">
                       Line total:{" "}
                       <span className="font-semibold">
-                        ${(i.price ?? 0) * i.qty}
+                        {formatPrice((i.price ?? 0) * i.qty)}
                       </span>
                     </div>
                   </div>
@@ -114,7 +116,9 @@ export default function CartDrawer() {
         <div className="px-6 py-5 border-t border-gold">
           <div className="flex justify-between text-lg mb-4">
             <span className="opacity-80">Total</span>
-            <span className="font-bold"> ${cart.total}</span>
+            <span className="font-bold">
+              {formatPrice(cart.total)}
+            </span>
           </div>
 
           <button
