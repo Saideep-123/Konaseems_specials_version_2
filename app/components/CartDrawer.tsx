@@ -8,37 +8,7 @@ export default function CartDrawer() {
   const cart = useCart();
   const router = useRouter();
 
-  /* ---------- HELPERS ---------- */
-  const formatPrice = (v: number) => `$${v.toFixed(2)}`;
-
-  const getWeightInKg = (w: string) => {
-    if (!w) return 0;
-
-    const value = parseFloat(w);
-    if (isNaN(value)) return 0;
-
-    if (w.toLowerCase().includes("kg")) return value;
-    if (w.toLowerCase().includes("g")) return value / 1000;
-
-    return 0;
-  };
-
-  const getShipping = (weightKg: number) => {
-    if (weightKg <= 5) return 29;
-    if (weightKg <= 7.5) return 35;
-    if (weightKg <= 10) return 40;
-    if (weightKg <= 15) return 50;
-    return 60; // fallback for >15kg
-  };
-
-  /* ---------- TOTAL WEIGHT ---------- */
-  const totalWeight = cart.items.reduce((sum, i) => {
-    const kg = getWeightInKg(i.weight);
-    return sum + kg * i.qty;
-  }, 0);
-
-  const shipping = getShipping(totalWeight);
-  const grandTotal = cart.total + shipping;
+  const formatPrice = (v: number) => `$${Number(v).toFixed(2)}`;
 
   return (
     <div
@@ -64,18 +34,39 @@ export default function CartDrawer() {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-gold">
           <div>
-            <h3 className="text-2xl">Your Cart</h3>
-            <p className="opacity-75 text-sm">{cart.count} item(s)</p>
+            <h3 className="text-2xl font-semibold">Your Cart</h3>
+            <p className="opacity-75 text-sm">
+              {cart.count} item(s)
+            </p>
           </div>
-          <button onClick={cart.close} aria-label="Close cart" type="button">
-            <X />
-          </button>
+
+          <div className="flex items-center gap-3">
+            {cart.items.length > 0 && (
+              <button
+                onClick={cart.clear}
+                className="text-sm underline opacity-80 hover:opacity-100"
+                type="button"
+              >
+                Clear Cart
+              </button>
+            )}
+
+            <button
+              onClick={cart.close}
+              aria-label="Close cart"
+              type="button"
+            >
+              <X />
+            </button>
+          </div>
         </div>
 
         {/* Items */}
-        <div className="p-6 space-y-4 overflow-auto h-[calc(100%-280px)]">
+        <div className="p-6 space-y-4 overflow-auto h-[calc(100%-250px)]">
           {cart.items.length === 0 ? (
-            <div className="opacity-70">Your cart is empty.</div>
+            <div className="opacity-70 text-center mt-10">
+              Your cart is empty.
+            </div>
           ) : (
             cart.items.map((i) => (
               <div key={i.id} className="premium-card p-4">
@@ -87,16 +78,22 @@ export default function CartDrawer() {
                   />
 
                   <div className="flex-1">
+                    {/* Title + price */}
                     <div className="flex justify-between gap-4">
                       <div>
-                        <div className="font-semibold">{i.name}</div>
-                        <div className="opacity-70 text-sm">{i.weight}</div>
+                        <div className="font-semibold">
+                          {i.name}
+                        </div>
+                        <div className="opacity-70 text-sm">
+                          {i.weight}
+                        </div>
                       </div>
                       <div className="font-bold">
                         {formatPrice(i.price ?? 0)}
                       </div>
                     </div>
 
+                    {/* Quantity controls */}
                     <div className="mt-3 flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <button
@@ -129,6 +126,7 @@ export default function CartDrawer() {
                       </button>
                     </div>
 
+                    {/* Line total */}
                     <div className="mt-2 text-sm opacity-70">
                       Line total:{" "}
                       <span className="font-semibold">
@@ -144,32 +142,12 @@ export default function CartDrawer() {
 
         {/* Footer */}
         <div className="px-6 py-5 border-t border-gold">
-          {cart.items.length > 0 && (
-            <div className="space-y-2 mb-4 text-lg">
-              <div className="flex justify-between">
-                <span className="opacity-80">Items Total</span>
-                <span className="font-bold">
-                  {formatPrice(cart.total)}
-                </span>
-              </div>
-
-              <div className="flex justify-between">
-                <span className="opacity-80">
-                  Shipping ({totalWeight.toFixed(1)} kg)
-                </span>
-                <span className="font-bold">
-                  {formatPrice(shipping)}
-                </span>
-              </div>
-
-              <div className="flex justify-between text-xl border-t pt-2">
-                <span>Total</span>
-                <span className="font-bold">
-                  {formatPrice(grandTotal)}
-                </span>
-              </div>
-            </div>
-          )}
+          <div className="flex justify-between text-lg mb-4">
+            <span className="opacity-80">Subtotal</span>
+            <span className="font-bold">
+              {formatPrice(cart.total)}
+            </span>
+          </div>
 
           <button
             className="btn-primary w-full"
@@ -180,7 +158,7 @@ export default function CartDrawer() {
             }}
             type="button"
           >
-            Continue
+            Continue to Checkout
           </button>
         </div>
       </div>
