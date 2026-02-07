@@ -298,7 +298,7 @@ export default function CheckoutPage() {
                   <span>
                     {it.name} × {it.qty}
                   </span>
-                  <span>${it.qty * it.price}</span>
+                  <span>{formatPrice(it.qty * it.price)}</span>
                 </div>
               ))}
 
@@ -323,15 +323,20 @@ export default function CheckoutPage() {
                   <span>${subtotal}</span>
                 </div>
                 {discount > 0 && (
-                  <div className="flex justify-between text-green-700">
-                    <span>Discount</span>
-                    <span>-${discount}</span>
-                  </div>
-                )}
-                <div className="flex justify-between text-lg">
-                  <span>Total</span>
-                  <span>${total}</span>
-                </div>
+<div className="flex justify-between">
+  <span>Subtotal</span>
+  <span>{formatPrice(subtotal)}</span>
+</div>
+{discount > 0 && (
+  <div className="flex justify-between text-green-700">
+    <span>Discount</span>
+    <span>-{formatPrice(discount)}</span>
+  </div>
+)}
+<div className="flex justify-between text-lg">
+  <span>Total</span>
+  <span>{formatPrice(total)}</span>
+</div>
               </div>
             </section>
 
@@ -421,7 +426,8 @@ export default function CheckoutPage() {
                 onClick={onPlaceOrder}
                 disabled={saving || cart.items.length === 0}
               >
-                {saving ? "Saving..." : `Place Order ($${total})`}
+               {saving ? "Saving..." : `Place Order (${formatPrice(total)})`}
+
               </button>
             </section>
           </div>
