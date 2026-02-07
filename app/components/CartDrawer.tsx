@@ -24,10 +24,11 @@ export default function CartDrawer() {
   };
 
   const getShipping = (weightKg: number) => {
-    if (weightKg <= 5) return 28;
-    if (weightKg <= 7.5) return 33;
-    if (weightKg <= 10) return 38;
-    return 45;
+    if (weightKg <= 5) return 29;
+    if (weightKg <= 7.5) return 35;
+    if (weightKg <= 10) return 40;
+    if (weightKg <= 15) return 50;
+    return 60; // fallback for >15kg
   };
 
   /* ---------- TOTAL WEIGHT ---------- */
@@ -143,30 +144,32 @@ export default function CartDrawer() {
 
         {/* Footer */}
         <div className="px-6 py-5 border-t border-gold">
-          <div className="space-y-2 mb-4 text-lg">
-            <div className="flex justify-between">
-              <span className="opacity-80">Items Total</span>
-              <span className="font-bold">
-                {formatPrice(cart.total)}
-              </span>
-            </div>
+          {cart.items.length > 0 && (
+            <div className="space-y-2 mb-4 text-lg">
+              <div className="flex justify-between">
+                <span className="opacity-80">Items Total</span>
+                <span className="font-bold">
+                  {formatPrice(cart.total)}
+                </span>
+              </div>
 
-            <div className="flex justify-between">
-              <span className="opacity-80">
-                Shipping ({totalWeight.toFixed(1)} kg)
-              </span>
-              <span className="font-bold">
-                {formatPrice(shipping)}
-              </span>
-            </div>
+              <div className="flex justify-between">
+                <span className="opacity-80">
+                  Shipping ({totalWeight.toFixed(1)} kg)
+                </span>
+                <span className="font-bold">
+                  {formatPrice(shipping)}
+                </span>
+              </div>
 
-            <div className="flex justify-between text-xl border-t pt-2">
-              <span>Total</span>
-              <span className="font-bold">
-                {formatPrice(grandTotal)}
-              </span>
+              <div className="flex justify-between text-xl border-t pt-2">
+                <span>Total</span>
+                <span className="font-bold">
+                  {formatPrice(grandTotal)}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
           <button
             className="btn-primary w-full"
