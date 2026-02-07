@@ -343,15 +343,76 @@ export default function CheckoutPage() {
             <section className="card p-6">
               <h2 className="text-xl font-bold mb-4">Shipping Details</h2>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                <Field
-                  label="Full Name *"
-                  value={shipping.fullName}
-                  onChange={(v) => setShipping({ ...shipping, fullName: v })}
-                  className={`${inputBase} ${showErr("fullName") ? inputErr : ""}`}
-                />
-                {/* other fields unchanged */}
-              </div>
+             <div className="grid md:grid-cols-2 gap-4">
+  <Field
+    label="Full Name *"
+    value={shipping.fullName}
+    onChange={(v) => setShipping({ ...shipping, fullName: v })}
+    className={`${inputBase} ${showErr("fullName") ? inputErr : ""}`}
+  />
+  <Field
+    label="Email *"
+    value={shipping.email}
+    onChange={(v) => setShipping({ ...shipping, email: v })}
+    className={`${inputBase} ${showErr("email") ? inputErr : ""}`}
+  />
+  <Field
+    label="Phone *"
+    value={shipping.phone}
+    onChange={(v) => setShipping({ ...shipping, phone: v })}
+    className={`${inputBase} ${showErr("phone") ? inputErr : ""}`}
+  />
+  <Field
+    label="Country *"
+    value={shipping.country}
+    onChange={(v) => setShipping({ ...shipping, country: v })}
+    className={`${inputBase} ${showErr("country") ? inputErr : ""}`}
+  />
+  <Field
+    label="Address Line 1 *"
+    value={shipping.address1}
+    onChange={(v) => setShipping({ ...shipping, address1: v })}
+    className={`${inputBase} ${showErr("address1") ? inputErr : ""}`}
+  />
+  <Field
+    label="Address Line 2"
+    value={shipping.address2}
+    onChange={(v) => setShipping({ ...shipping, address2: v })}
+    className={inputBase}
+  />
+  <Field
+    label="City *"
+    value={shipping.city}
+    onChange={(v) => setShipping({ ...shipping, city: v })}
+    className={`${inputBase} ${showErr("city") ? inputErr : ""}`}
+  />
+  <Field
+    label="State *"
+    value={shipping.state}
+    onChange={(v) => setShipping({ ...shipping, state: v })}
+    className={`${inputBase} ${showErr("state") ? inputErr : ""}`}
+  />
+  <Field
+    label="ZIP / Postal *"
+    value={shipping.zip}
+    onChange={(v) => setShipping({ ...shipping, zip: v })}
+    className={`${inputBase} ${showErr("zip") ? inputErr : ""}`}
+  />
+
+  <div className="md:col-span-2">
+    <label className="block text-sm font-semibold mb-1">
+      Delivery Notes
+    </label>
+    <textarea
+      className={`${inputBase} min-h-[110px]`}
+      value={shipping.deliveryNotes}
+      onChange={(e) =>
+        setShipping({ ...shipping, deliveryNotes: e.target.value })
+      }
+    />
+  </div>
+</div>
+
 
               {saveError && (
                 <div className="mt-4 text-sm text-red-600">{saveError}</div>
