@@ -45,6 +45,7 @@ function makeTable(headers: string[], rows: string[][]) {
 export default function CheckoutPage() {
   const cart = useCart();
 
+  /* ================= SHIPPING (UNCHANGED) ================= */
   const [shipping, setShipping] = useState<Shipping>({
     fullName: "",
     email: "",
@@ -63,6 +64,7 @@ export default function CheckoutPage() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
+  /* ================= COUPON ================= */
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
   const [couponMsg, setCouponMsg] = useState<string | null>(null);
@@ -80,6 +82,7 @@ export default function CheckoutPage() {
     } catch {}
   }, [shipping]);
 
+  /* ================= VALIDATION (UNCHANGED) ================= */
   const errors = useMemo(() => {
     const e: Record<string, string> = {};
     if (!shipping.fullName.trim()) e.fullName = "Full name is required";
@@ -95,6 +98,7 @@ export default function CheckoutPage() {
 
   const isValid = useMemo(() => Object.keys(errors).length === 0, [errors]);
 
+  /* ================= TOTALS ================= */
   const subtotal = cart.items.reduce(
     (s: number, it: any) => s + Number(it.price) * Number(it.qty),
     0
@@ -103,6 +107,7 @@ export default function CheckoutPage() {
   const shippingFee = 0;
   const total = Math.max(0, subtotal - discount + shippingFee);
 
+  /* ================= APPLY COUPON ================= */
   const applyCoupon = async () => {
     setCouponMsg(null);
     setDiscount(0);
@@ -140,6 +145,7 @@ export default function CheckoutPage() {
     setCouponMsg(`Coupon applied (-$${d})`);
   };
 
+  /* ================= WHATSAPP MESSAGE ================= */
   const buildWhatsAppMessage = (orderId: string) => {
     const deliveryRows = [
       ["Name", safeStr(shipping.fullName)],
@@ -188,6 +194,7 @@ export default function CheckoutPage() {
     ].join("\n");
   };
 
+  /* ================= PLACE ORDER ================= */
   const onPlaceOrder = async () => {
     setTouched({
       fullName: true,
@@ -282,6 +289,7 @@ export default function CheckoutPage() {
           <h1 className="text-4xl font-extrabold text-brown mb-8">Checkout</h1>
 
           <div className="grid lg:grid-cols-2 gap-8">
+            {/* ===== ORDER SUMMARY (COUPON ADDED) ===== */}
             <section className="card p-6">
               <h2 className="text-xl font-bold mb-4">Order Summary</h2>
 
@@ -327,10 +335,86 @@ export default function CheckoutPage() {
               </div>
             </section>
 
+            {/* ===== SHIPPING FORM (UNCHANGED FROM ZIP) ===== */}
             <section className="card p-6">
               <h2 className="text-xl font-bold mb-4">Shipping Details</h2>
 
-              {/* form unchanged */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <Field
+                  label="Full Name *"
+                  value={shipping.fullName}
+                  onChange={(v) => setShipping({ ...shipping, fullName: v })}
+                  className={`${inputBase} ${showErr("fullName") ? inputErr : ""}`}
+                />
+                <Field
+                  label="Email *"
+                  value={shipping.email}
+                  onChange={(v) => setShipping({ ...shipping, email: v })}
+                  className={`${inputBase} ${showErr("email") ? inputErr : ""}`}
+                />
+                <Field
+                  label="Phone *"
+                  value={shipping.phone}
+                  onChange={(v) => setShipping({ ...shipping, phone: v })}
+                  className={`${inputBase} ${showErr("phone") ? inputErr : ""}`}
+                />
+                <Field
+                  label="Country *"
+                  value={shipping.country}
+                  onChange={(v) => setShipping({ ...shipping, country: v })}
+                  className={`${inputBase} ${showErr("country") ? inputErr : ""}`}
+                />
+                <Field
+                  label="Address Line 1 *"
+                  value={shipping.address1}
+                  onChange={(v) => setShipping({ ...shipping, address1: v })}
+                  className={`${inputBase} ${showErr("address1") ? inputErr : ""}`}
+                />
+                <Field
+                  label="Address Line 2"
+                  value={shipping.address2}
+                  onChange={(v) => setShipping({ ...shipping, address2: v })}
+                  className={inputBase}
+                />
+                <Field
+                  label="City *"
+                  value={shipping.city}
+                  onChange={(v) => setShipping({ ...shipping, city: v })}
+                  className={`${inputBase} ${showErr("city") ? inputErr : ""}`}
+                />
+                <Field
+                  label="State *"
+                  value={shipping.state}
+                  onChange={(v) => setShipping({ ...shipping, state: v })}
+                  className={`${inputBase} ${showErr("state") ? inputErr : ""}`}
+                />
+                <Field
+                  label="ZIP / Postal *"
+                  value={shipping.zip}
+                  onChange={(v) => setShipping({ ...shipping, zip: v })}
+                  className={`${inputBase} ${showErr("zip") ? inputErr : ""}`}
+                />
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-semibold mb-1">
+                    Delivery Notes
+                  </label>
+                  <textarea
+                    className={`${inputBase} min-h-[110px]`}
+                    value={shipping.deliveryNotes}
+                    onChange={(e) =>
+                      setShipping({ ...shipping, deliveryNotes: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              {saveError && (
+                <div className="mt-4 text-sm text-red-600">{saveError}</div>
+              )}
+              {successMsg && (
+                <div className="mt-4 text-sm text-green-700">{successMsg}</div>
+              )}
 
               <button
                 className="btn-primary mt-6 w-full"
