@@ -57,10 +57,9 @@ export default function Navbar() {
           {/* Logo -> Home (works on all pages) */}
           <Link
   href="/"
-  className="brand-logo text-3xl text-brown font-extrabold tracking-wide"
+  className="brand-logo text-4xl text-brown font-black tracking-wider"
   aria-label="Go to home"
 >
-
          Konaseema Specials   
           </Link>
 
