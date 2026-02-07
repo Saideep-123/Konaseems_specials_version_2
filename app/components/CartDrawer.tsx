@@ -8,7 +8,36 @@ export default function CartDrawer() {
   const cart = useCart();
   const router = useRouter();
 
+  /* ---------- HELPERS ---------- */
   const formatPrice = (v: number) => `$${v.toFixed(2)}`;
+
+  const getWeightInKg = (w: string) => {
+    if (!w) return 0;
+
+    const value = parseFloat(w);
+    if (isNaN(value)) return 0;
+
+    if (w.toLowerCase().includes("kg")) return value;
+    if (w.toLowerCase().includes("g")) return value / 1000;
+
+    return 0;
+  };
+
+  const getShipping = (weightKg: number) => {
+    if (weightKg <= 5) return 28;
+    if (weightKg <= 7.5) return 33;
+    if (weightKg <= 10) return 38;
+    return 45;
+  };
+
+  /* ---------- TOTAL WEIGHT ---------- */
+  const totalWeight = cart.items.reduce((sum, i) => {
+    const kg = getWeightInKg(i.weight);
+    return sum + kg * i.qty;
+  }, 0);
+
+  const shipping = getShipping(totalWeight);
+  const grandTotal = cart.total + shipping;
 
   return (
     <div
@@ -43,7 +72,7 @@ export default function CartDrawer() {
         </div>
 
         {/* Items */}
-        <div className="p-6 space-y-4 overflow-auto h-[calc(100%-250px)]">
+        <div className="p-6 space-y-4 overflow-auto h-[calc(100%-280px)]">
           {cart.items.length === 0 ? (
             <div className="opacity-70">Your cart is empty.</div>
           ) : (
@@ -114,11 +143,29 @@ export default function CartDrawer() {
 
         {/* Footer */}
         <div className="px-6 py-5 border-t border-gold">
-          <div className="flex justify-between text-lg mb-4">
-            <span className="opacity-80">Total</span>
-            <span className="font-bold">
-              {formatPrice(cart.total)}
-            </span>
+          <div className="space-y-2 mb-4 text-lg">
+            <div className="flex justify-between">
+              <span className="opacity-80">Items Total</span>
+              <span className="font-bold">
+                {formatPrice(cart.total)}
+              </span>
+            </div>
+
+            <div className="flex justify-between">
+              <span className="opacity-80">
+                Shipping ({totalWeight.toFixed(1)} kg)
+              </span>
+              <span className="font-bold">
+                {formatPrice(shipping)}
+              </span>
+            </div>
+
+            <div className="flex justify-between text-xl border-t pt-2">
+              <span>Total</span>
+              <span className="font-bold">
+                {formatPrice(grandTotal)}
+              </span>
+            </div>
           </div>
 
           <button
