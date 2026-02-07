@@ -12,21 +12,8 @@ h1, h2, h3 {
   font-family: var(--font-playfair);
 }
 
-/*.brand-logo {
-  font-family: var(--font-greatvibes);
-}
-*/
-
 .brand-logo {
   font-family: var(--font-greatvibes);
-  font-size: 32px;
-  letter-spacing: 0.5px;
-
-  text-shadow:
-    1px 0 currentColor,
-    -1px 0 currentColor,
-    0 1px currentColor,
-    0 -1px currentColor;
 }
 
 
