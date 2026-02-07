@@ -18,10 +18,17 @@ h1, h2, h3 {
 */
 
 .brand-logo {
-  font-family: var(--font-playfair);
-  font-weight: 900;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.1);
+  font-family: var(--font-greatvibes);
+  font-size: 32px;
+  letter-spacing: 0.5px;
+
+  text-shadow:
+    1px 0 currentColor,
+    -1px 0 currentColor,
+    0 1px currentColor,
+    0 -1px currentColor;
 }
+
 
 .premium-card {
   background: #fffaf2;
