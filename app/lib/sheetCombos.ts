@@ -6,17 +6,26 @@ export type ComboItem = {
   weight: string;
 };
 
+/* ========================================
+   Combo product type
+   weight = total shipping weight
+======================================== */
 export type ComboProduct = {
   id: string;
   name: string;
   category: "Combos & Value Packs";
   image: string;
 
-  // combo price and weight
+  // price
   price: number;
+
+  // shipping weight used by cart
+  weight: string;
+
+  // original sheet field
   total_weight: string;
 
-  // combo flags
+  // combo flag
   is_combo: true;
 
   items: ComboItem[];
@@ -58,20 +67,21 @@ export async function getCombosFromSheet(): Promise<ComboProduct[]> {
 
     if (!comboMap[comboId]) {
       comboMap[comboId] = {
-  id: comboId,
-  name: row.combo_name,
-  category: "Combos & Value Packs",
-  image: row.combo_image,
-  price: Number(row.combo_price ?? 0),
+        id: comboId,
+        name: row.combo_name,
+        category: "Combos & Value Packs",
+        image: row.combo_image,
+        price: Number(row.combo_price ?? 0),
 
-  // IMPORTANT: cart uses this field
-  weight: row.total_weight ?? "",
+        // IMPORTANT: this is what shipping logic reads
+        weight: row.total_weight ?? "",
 
-  total_weight: row.total_weight ?? "",
-  is_combo: true,
-  items: [],
-};
+        // original value from sheet
+        total_weight: row.total_weight ?? "",
 
+        is_combo: true,
+        items: [],
+      };
     }
 
     comboMap[comboId].items.push({
