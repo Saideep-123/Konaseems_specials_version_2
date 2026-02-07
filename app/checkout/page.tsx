@@ -98,16 +98,41 @@ export default function CheckoutPage() {
 
   const isValid = useMemo(() => Object.keys(errors).length === 0, [errors]);
 
+  /* ================= HELPERS ================= */
+  const formatPrice = (v: number) => `$${v.toFixed(2)}`;
+
+  const getWeightInKg = (w: string) => {
+    if (!w) return 0;
+    const value = parseFloat(w);
+    if (isNaN(value)) return 0;
+    if (w.toLowerCase().includes("kg")) return value;
+    if (w.toLowerCase().includes("g")) return value / 1000;
+    return 0;
+  };
+
+  const getShipping = (weightKg: number) => {
+    if (weightKg <= 5) return 29;
+    if (weightKg <= 7.5) return 35;
+    if (weightKg <= 10) return 40;
+    if (weightKg <= 15) return 50;
+    return 60;
+  };
+
   /* ================= TOTALS ================= */
   const subtotal = cart.items.reduce(
     (s: number, it: any) => s + Number(it.price) * Number(it.qty),
     0
   );
 
-  const shippingFee = 0;
-  const total = Math.max(0, subtotal - discount + shippingFee);
+  const totalWeight = cart.items.reduce((sum: number, i: any) => {
+    const kg = getWeightInKg(i.weight);
+    return sum + kg * i.qty;
+  }, 0);
 
-  const formatPrice = (v: number) => `$${v.toFixed(2)}`;
+  const shippingFee =
+    cart.items.length > 0 ? getShipping(totalWeight) : 0;
+
+  const total = Math.max(0, subtotal - discount + shippingFee);
 
   /* ================= APPLY COUPON ================= */
   const applyCoupon = async () => {
@@ -145,55 +170,6 @@ export default function CheckoutPage() {
 
     setDiscount(d);
     setCouponMsg(`Coupon applied (-$${d})`);
-  };
-
-  /* ================= WHATSAPP MESSAGE ================= */
-  const buildWhatsAppMessage = (orderId: string) => {
-    const deliveryRows = [
-      ["Name", safeStr(shipping.fullName)],
-      ["Email", safeStr(shipping.email)],
-      ["Phone", safeStr(shipping.phone)],
-      ["Country", safeStr(shipping.country)],
-      ["Address 1", safeStr(shipping.address1)],
-      ["Address 2", safeStr(shipping.address2 || "-")],
-      ["City", safeStr(shipping.city)],
-      ["State", safeStr(shipping.state)],
-      ["ZIP", safeStr(shipping.zip)],
-      ["Notes", safeStr(shipping.deliveryNotes || "-")],
-    ];
-
-    const itemsRows = cart.items.map((it: any, i: number) => [
-      String(i + 1),
-      safeStr(it.name),
-      String(it.qty),
-      formatPrice(it.price),
-      formatPrice(it.price * it.qty),
-    ]);
-
-    const totalsRows = [
-      ["Subtotal", formatPrice(subtotal)],
-      discount > 0 ? ["Discount", `-${formatPrice(discount)}`] : null,
-      ["Total", formatPrice(total)],
-    ].filter(Boolean) as string[][];
-
-    return [
-      `Order ID: ${orderId}`,
-      "",
-      "Delivery Details:",
-      "```",
-      makeTable(["Field", "Value"], deliveryRows),
-      "```",
-      "",
-      "Order Items:",
-      "```",
-      makeTable(["#", "Item", "Qty", "Price", "Line"], itemsRows),
-      "```",
-      "",
-      "Totals:",
-      "```",
-      makeTable(["Label", "Amount"], totalsRows),
-      "```",
-    ].join("\n");
   };
 
   /* ================= PLACE ORDER ================= */
@@ -263,13 +239,6 @@ export default function CheckoutPage() {
       );
 
       cart.clear();
-
-      const msg = buildWhatsAppMessage(order.id);
-      window.open(
-        `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`,
-        "_blank"
-      );
-
       setSuccessMsg(`Order placed successfully. Order ID: ${order.id}`);
     } catch (e: any) {
       setSaveError(e.message || "Failed to place order");
@@ -279,8 +248,8 @@ export default function CheckoutPage() {
   };
 
   const inputBase =
-    "w-full px-4 py-3 rounded-2xl border border-gold bg-[#fffaf2] focus:outline-none focus:ring-2 focus:ring-gold/40";
-  const inputErr = "border-red-400 focus:ring-red-200";
+    "w-full px-4 py-3 rounded-2xl border border-gold bg-[#fffaf2]";
+  const inputErr = "border-red-400";
   const showErr = (k: keyof Shipping) => touched[k] && errors[k];
 
   return (
@@ -288,36 +257,30 @@ export default function CheckoutPage() {
       <Navbar />
       <main className="min-h-screen bg-cream pt-28 pb-16">
         <div className="max-w-6xl mx-auto px-5">
-          <h1 className="text-4xl font-extrabold text-brown mb-8">Checkout</h1>
+          <h1 className="text-4xl font-extrabold text-brown mb-8">
+            Checkout
+          </h1>
 
           <div className="grid lg:grid-cols-2 gap-8">
             {/* ORDER SUMMARY */}
             <section className="card p-6">
-              <h2 className="text-xl font-bold mb-4">Order Summary</h2>
+              <h2 className="text-xl font-bold mb-4">
+                Order Summary
+              </h2>
 
               {cart.items.map((it: any) => (
-                <div key={it.id} className="flex justify-between mb-2">
+                <div
+                  key={it.id}
+                  className="flex justify-between mb-2"
+                >
                   <span>
                     {it.name} × {it.qty}
                   </span>
-                  <span>{formatPrice(it.qty * it.price)}</span>
+                  <span>
+                    {formatPrice(it.qty * it.price)}
+                  </span>
                 </div>
               ))}
-
-              <div className="mt-4">
-                <label className="text-sm font-semibold">Coupon Code</label>
-                <div className="flex gap-2 mt-1">
-                  <input
-                    className={inputBase}
-                    value={coupon}
-                    onChange={(e) => setCoupon(e.target.value)}
-                  />
-                  <button className="btn-secondary" onClick={applyCoupon}>
-                    Apply
-                  </button>
-                </div>
-                {couponMsg && <div className="text-sm mt-1">{couponMsg}</div>}
-              </div>
 
               <div className="border-t mt-5 pt-4 space-y-2 font-semibold">
                 <div className="flex justify-between">
@@ -332,7 +295,16 @@ export default function CheckoutPage() {
                   </div>
                 )}
 
-                <div className="flex justify-between text-lg">
+                {cart.items.length > 0 && (
+                  <div className="flex justify-between">
+                    <span>
+                      Shipping ({totalWeight.toFixed(1)} kg)
+                    </span>
+                    <span>{formatPrice(shippingFee)}</span>
+                  </div>
+                )}
+
+                <div className="flex justify-between text-lg border-t pt-2">
                   <span>Total</span>
                   <span>{formatPrice(total)}</span>
                 </div>
@@ -341,84 +313,71 @@ export default function CheckoutPage() {
 
             {/* SHIPPING FORM */}
             <section className="card p-6">
-              <h2 className="text-xl font-bold mb-4">Shipping Details</h2>
+              <h2 className="text-xl font-bold mb-4">
+                Shipping Details
+              </h2>
 
-             <div className="grid md:grid-cols-2 gap-4">
-  <Field
-    label="Full Name *"
-    value={shipping.fullName}
-    onChange={(v) => setShipping({ ...shipping, fullName: v })}
-    className={`${inputBase} ${showErr("fullName") ? inputErr : ""}`}
-  />
-  <Field
-    label="Email *"
-    value={shipping.email}
-    onChange={(v) => setShipping({ ...shipping, email: v })}
-    className={`${inputBase} ${showErr("email") ? inputErr : ""}`}
-  />
-  <Field
-    label="Phone *"
-    value={shipping.phone}
-    onChange={(v) => setShipping({ ...shipping, phone: v })}
-    className={`${inputBase} ${showErr("phone") ? inputErr : ""}`}
-  />
-  <Field
-    label="Country *"
-    value={shipping.country}
-    onChange={(v) => setShipping({ ...shipping, country: v })}
-    className={`${inputBase} ${showErr("country") ? inputErr : ""}`}
-  />
-  <Field
-    label="Address Line 1 *"
-    value={shipping.address1}
-    onChange={(v) => setShipping({ ...shipping, address1: v })}
-    className={`${inputBase} ${showErr("address1") ? inputErr : ""}`}
-  />
-  <Field
-    label="Address Line 2"
-    value={shipping.address2}
-    onChange={(v) => setShipping({ ...shipping, address2: v })}
-    className={inputBase}
-  />
-  <Field
-    label="City *"
-    value={shipping.city}
-    onChange={(v) => setShipping({ ...shipping, city: v })}
-    className={`${inputBase} ${showErr("city") ? inputErr : ""}`}
-  />
-  <Field
-    label="State *"
-    value={shipping.state}
-    onChange={(v) => setShipping({ ...shipping, state: v })}
-    className={`${inputBase} ${showErr("state") ? inputErr : ""}`}
-  />
-  <Field
-    label="ZIP / Postal *"
-    value={shipping.zip}
-    onChange={(v) => setShipping({ ...shipping, zip: v })}
-    className={`${inputBase} ${showErr("zip") ? inputErr : ""}`}
-  />
+              <div className="grid md:grid-cols-2 gap-4">
+                <Field label="Full Name *" value={shipping.fullName}
+                  onChange={(v) => setShipping({ ...shipping, fullName: v })}
+                  className={`${inputBase} ${showErr("fullName") ? inputErr : ""}`}
+                />
+                <Field label="Email *" value={shipping.email}
+                  onChange={(v) => setShipping({ ...shipping, email: v })}
+                  className={`${inputBase} ${showErr("email") ? inputErr : ""}`}
+                />
+                <Field label="Phone *" value={shipping.phone}
+                  onChange={(v) => setShipping({ ...shipping, phone: v })}
+                  className={`${inputBase} ${showErr("phone") ? inputErr : ""}`}
+                />
+                <Field label="Country *" value={shipping.country}
+                  onChange={(v) => setShipping({ ...shipping, country: v })}
+                  className={`${inputBase} ${showErr("country") ? inputErr : ""}`}
+                />
+                <Field label="Address Line 1 *" value={shipping.address1}
+                  onChange={(v) => setShipping({ ...shipping, address1: v })}
+                  className={`${inputBase} ${showErr("address1") ? inputErr : ""}`}
+                />
+                <Field label="Address Line 2" value={shipping.address2}
+                  onChange={(v) => setShipping({ ...shipping, address2: v })}
+                  className={inputBase}
+                />
+                <Field label="City *" value={shipping.city}
+                  onChange={(v) => setShipping({ ...shipping, city: v })}
+                  className={`${inputBase} ${showErr("city") ? inputErr : ""}`}
+                />
+                <Field label="State *" value={shipping.state}
+                  onChange={(v) => setShipping({ ...shipping, state: v })}
+                  className={`${inputBase} ${showErr("state") ? inputErr : ""}`}
+                />
+                <Field label="ZIP / Postal *" value={shipping.zip}
+                  onChange={(v) => setShipping({ ...shipping, zip: v })}
+                  className={`${inputBase} ${showErr("zip") ? inputErr : ""}`}
+                />
 
-  <div className="md:col-span-2">
-    <label className="block text-sm font-semibold mb-1">
-      Delivery Notes
-    </label>
-    <textarea
-      className={`${inputBase} min-h-[110px]`}
-      value={shipping.deliveryNotes}
-      onChange={(e) =>
-        setShipping({ ...shipping, deliveryNotes: e.target.value })
-      }
-    />
-  </div>
-</div>
-
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-semibold mb-1">
+                    Delivery Notes
+                  </label>
+                  <textarea
+                    className={`${inputBase} min-h-[110px]`}
+                    value={shipping.deliveryNotes}
+                    onChange={(e) =>
+                      setShipping({ ...shipping, deliveryNotes: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
 
               {saveError && (
-                <div className="mt-4 text-sm text-red-600">{saveError}</div>
+                <div className="mt-4 text-sm text-red-600">
+                  {saveError}
+                </div>
               )}
               {successMsg && (
-                <div className="mt-4 text-sm text-green-700">{successMsg}</div>
+                <div className="mt-4 text-sm text-green-700">
+                  {successMsg}
+                </div>
               )}
 
               <button
@@ -426,7 +385,9 @@ export default function CheckoutPage() {
                 onClick={onPlaceOrder}
                 disabled={saving || cart.items.length === 0}
               >
-                {saving ? "Saving..." : `Place Order (${formatPrice(total)})`}
+                {saving
+                  ? "Saving..."
+                  : `Place Order (${formatPrice(total)})`}
               </button>
             </section>
           </div>
@@ -450,7 +411,9 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-sm font-semibold mb-1">{label}</label>
+      <label className="block text-sm font-semibold mb-1">
+        {label}
+      </label>
       <input
         className={className}
         value={value}
