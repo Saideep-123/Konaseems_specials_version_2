@@ -6,7 +6,7 @@ import Footer from "../components/Footer";
 import { useCart } from "../components/CartContext";
 import { supabase } from "../lib/supabaseClient";
 
-const WHATSAPP_NUMBER = "7989301401";
+const WHATSAPP_NUMBER = "6305419750";
 
 type Shipping = {
   fullName: string;
