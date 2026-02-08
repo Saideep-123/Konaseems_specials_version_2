@@ -23,10 +23,6 @@ type Shipping = {
 
 const STORAGE_KEY = "konaseema_shipping_v1";
 
-function safeStr(v: any) {
-  return String(v ?? "").trim();
-}
-
 /* ---------- TABLE FOR WHATSAPP ---------- */
 function makeTable(headers: string[], rows: string[][]) {
   const widths = headers.map((h, i) =>
@@ -238,8 +234,45 @@ export default function CheckoutPage() {
         }))
       );
 
+      /* ================= WHATSAPP MESSAGE ================= */
+      const rows = cart.items.map((it: any) => [
+        it.name,
+        String(it.qty),
+        `$${it.price}`,
+        `$${(it.qty * it.price).toFixed(2)}`,
+      ]);
+
+      const table = makeTable(
+        ["Item", "Qty", "Price", "Total"],
+        rows
+      );
+
+      const message = `
+🛒 *New Order #${order.id}*
+
+${table}
+
+Subtotal: ${formatPrice(subtotal)}
+Shipping: ${formatPrice(shippingFee)}
+Total: *${formatPrice(total)}*
+
+👤 *Customer*
+${shipping.fullName}
+${shipping.phone}
+${shipping.address1}, ${shipping.city}
+${shipping.state}, ${shipping.zip}
+${shipping.country}
+
+Notes: ${shipping.deliveryNotes || "None"}
+`;
+
       cart.clear();
       setSuccessMsg(`Order placed successfully. Order ID: ${order.id}`);
+
+      const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+        message
+      )}`;
+      window.location.href = url;
     } catch (e: any) {
       setSaveError(e.message || "Failed to place order");
     } finally {
